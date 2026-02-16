@@ -1,0 +1,148 @@
+/* ===== RESET ===== */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ===== BACKGROUND ===== */
+.auth-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(
+    135deg,
+    #5ee7df,
+    #b490ca,
+    #f72585
+  );
+}
+
+/* ===== CARD ===== */
+.auth-card {
+  width: 380px;
+  background: white;
+  border-radius: 14px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.auth-card h2 {
+  font-size: 28px;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+/* ===== INPUT ===== */
+.input-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  font-size: 13px;
+  color: #666;
+}
+
+.input-group input {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #ddd;
+  padding: 10px 5px;
+  outline: none;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.input-group input:focus {
+  border-bottom: 2px solid #f72585;
+}
+
+/* ===== LOGIN BUTTON ===== */
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 30px;
+  font-size: 15px;
+  color: white;
+  cursor: pointer;
+
+  background: linear-gradient(
+    90deg,
+    #5ee7df,
+    #b490ca,
+    #f72585
+  );
+
+  transition: 0.3s;
+}
+
+.auth-btn:hover {
+  transform: scale(1.03);
+}
+
+/* ===== TEXT ===== */
+.switch-text {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.switch-text span {
+  color: #f72585;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===== REGISTER PAGE LIGHT BLUE THEME ===== */
+.auth-page.register-bg {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(
+    135deg,
+    #dbeafe,
+    #93c5fd,
+    #60a5fa
+  );
+}
+
+/* Register button color */
+.register-bg .auth-btn {
+  background: linear-gradient(
+    90deg,
+    #60a5fa,
+    #3b82f6,
+    #2563eb
+  );
+}
+
+/* ===== LOGIN BLUE THEME ===== */
+.auth-page.login-bg {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(
+    135deg,
+    #dbeafe,
+    #60a5fa,
+    #2563eb
+  );
+}
+
+/* Blue button */
+.login-bg .auth-btn {
+  background: linear-gradient(
+    90deg,
+    #60a5fa,
+    #3b82f6,
+    #1d4ed8
+  );
+}
