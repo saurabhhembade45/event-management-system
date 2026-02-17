@@ -146,3 +146,55 @@ body {
     #1d4ed8
   );
 }
+.dashboard {
+  padding: 30px;
+}
+
+.clubs-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+/* Card */
+.club-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.club-card:hover {
+  transform: translateY(-5px);
+}
+
+.club-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.club-content {
+  padding: 15px;
+}
+
+.club-content h3 {
+  margin: 0;
+}
+
+.club-content p {
+  font-size: 14px;
+  color: #555;
+}
+
+.club-content button {
+  margin-top: 10px;
+  padding: 8px 14px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
