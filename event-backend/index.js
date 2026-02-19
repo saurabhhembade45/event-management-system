@@ -11,12 +11,14 @@ const fileUpload = require("express-fileupload");
 
 app.use(cors());
 app.use(express.json());
+
 app.use(
     fileUpload({
       useTempFiles: true,
-      tempFileDir: "/tmp/",
+      tempFileDir: "./tmp/",   // ✅ LOCAL folder instead of /tmp
     })
   );
+  
   
 app.use("/api/v1", userRoutes); 
 connectDB();

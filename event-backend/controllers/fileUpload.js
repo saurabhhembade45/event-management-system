@@ -2,14 +2,15 @@ const clubs = require("../models/clubs");
 const cloudinary = require("cloudinary").v2;
 
 function isFileSupported(type, supportedTypes) {
-    return supportedTypes.include(type);
+    return supportedTypes.includes(type); 
 }
+
 const uploadFileToCloudinary = async (file, folder, quality) => {
   const options = {
     folder: folder,
     quality: quality || "auto",
-  };
-
+  }; 
+  
   const result = await cloudinary.uploader.upload(
     file.tempFilePath,
     options
@@ -18,4 +19,8 @@ const uploadFileToCloudinary = async (file, folder, quality) => {
   return result;
 };
 
-module.exports = uploadFileToCloudinary;
+module.exports = {
+    uploadFileToCloudinary, isFileSupported
+  };
+  
+

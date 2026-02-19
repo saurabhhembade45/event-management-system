@@ -1,6 +1,8 @@
 const Club = require("../models/clubs");
-const  uploadFileToCloudinary  = require("./fileUpload"); 
-// ================= CREATE CLUB =================
+const  {uploadFileToCloudinary, isFileSupported}  = require("./fileUpload"); 
+
+
+// ================= CREATE CLUB ================= 
 exports.createClub = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -26,7 +28,7 @@ exports.createClub = async (req, res) => {
   // ✅ upload image
   const response = await uploadFileToCloudinary(
     image,
-    "clubImages"
+    "clubImages", 50
   );
     const club = await Club.create({
       name,
@@ -34,7 +36,7 @@ exports.createClub = async (req, res) => {
       image : response.secure_url,
       createdBy: userId, 
     });
-
+    console.log("uploaded to cloudinary");
     res.status(200).json({
       success: true,
       message: "Club created successfully",
