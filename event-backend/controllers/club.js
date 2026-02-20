@@ -50,4 +50,5 @@ exports.createClub = async (req, res) => {
       message: "Error creating club",
     });
   }
-};
+}; 
+

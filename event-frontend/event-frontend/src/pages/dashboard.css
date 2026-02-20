@@ -1,0 +1,117 @@
+/* ================= DASHBOARD ================= */
+
+.dashboard {
+    padding: 25px;
+    background: #f5f7fb;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  /* ================= ADD BUTTON ================= */
+  
+  .add-btn {
+    padding: 10px 18px;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 25px;
+    transition: 0.2s;
+  }
+  
+  .add-btn:hover {
+    background: #4338ca;
+  }
+  
+  /* ================= GRID ================= */
+  
+  .club-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+  }
+  
+  /* ================= CARD ================= */
+  
+  .club-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.25s ease;
+  }
+  
+  .club-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.15);
+  }
+  
+  /* ================= IMAGE ================= */
+  
+  .club-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+  }
+  
+  /* ================= CONTENT ================= */
+  
+  .club-content {
+    padding: 16px 18px;
+  }
+  
+  .club-content h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #111827;
+  }
+  
+  .club-content p {
+    margin-top: 8px;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* ================= ADD CLUB BUTTON ================= */
+
+.add-btn {
+    background: #4f46e5;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: all 0.25s ease;
+  }
+  
+  /* Hover effect */
+  .add-btn:hover {
+    background: #4338ca;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  
+  /* Click effect */
+  .add-btn:active {
+    transform: scale(0.97);
+  }
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+  
+  .dashboard-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+  }
+  

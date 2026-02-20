@@ -3,7 +3,7 @@ require("dotenv").config();
 const cors = require("cors");  
 const userRoutes = require("./routes/User");
 const clubRoutes = require("./routes/clubRoutes"); 
-
+const eventRoutes = require("./routes/eventRoutes"); 
 
 const {connectDB} = require("./config/database");
 const app = express();
@@ -23,6 +23,7 @@ app.use(
 app.use("/api/v1", userRoutes); 
 connectDB();
 app.use("/api/v1/clubs", clubRoutes);
+app.use("/api/v1/events", eventRoutes);
 
 
 const PORT = process.env.PORT || 4000;

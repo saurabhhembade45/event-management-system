@@ -10,7 +10,7 @@ exports.register = async(req,res) => {
         
         if (existingUser) {
             return res.status(400).json({
-                succes : false,
+                success : false,
                 message : "user already exists for this mail",
             }); 
         }
@@ -55,7 +55,7 @@ exports.login = async(req,res) => {
         const user = await User.findOne({email});
         if (!user) {
             return res.status(401).json({
-                succes : false,
+                success : false,
                 message : "User not registred",
             })
         }
