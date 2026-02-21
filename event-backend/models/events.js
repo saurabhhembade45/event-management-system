@@ -17,6 +17,27 @@ const eventSchema = new mongoose.Schema(
       required: true,
     },
 
+    // ⭐ NEW FIELDS (for event detail page)
+    date: {
+      type: String,
+      required: true,
+    },
+
+    time: {
+      type: String,
+      required: true,
+    },
+
+    location: {
+      type: String,
+      required: true,
+    }, 
+    registrationFee: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+
     // ⭐ link event to club
     club: {
       type: mongoose.Schema.Types.ObjectId,

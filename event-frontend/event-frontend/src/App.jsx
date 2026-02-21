@@ -4,6 +4,10 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/dashboard"; 
 import { Toaster } from "react-hot-toast";
 import "./index.css";
+import ClubEvents from "./pages/clubEvents"; 
+import EventDetails from "./pages/eventDetailPage";  
+import PaymentPage from "./pages/payments"; 
+
 
 function App() {
   return (
@@ -20,6 +24,13 @@ function App() {
 
         {/* Dashboard Page */}
         <Route path="/dashboard" element={<Dashboard />} />
+
+         {/* events page */}
+        <Route path="/club/:clubId" element={<ClubEvents />} />
+
+        <Route path="/event/:eventId" element={<EventDetails />} />
+
+        <Route path="/payment/:eventId" element={<PaymentPage />} />
       </Routes>
     </>
   );

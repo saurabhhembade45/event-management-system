@@ -5,6 +5,8 @@
 // useEffect -> runs code automatically when component loads
 import { useEffect, useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 // Axios instance used to call backend APIs
 import API from "../services/api";
 
@@ -18,6 +20,7 @@ import "./dashboard.css";
 // ================= DASHBOARD COMPONENT =================
 function Dashboard() {
 
+  const navigate = useNavigate();
   // clubs -> stores list of clubs fetched from backend
   // setClubs -> function used to update clubs
   const [clubs, setClubs] = useState([]);
