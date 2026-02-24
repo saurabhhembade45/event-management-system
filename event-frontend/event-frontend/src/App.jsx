@@ -7,6 +7,7 @@ import "./index.css";
 import ClubEvents from "./pages/clubEvents"; 
 import EventDetails from "./pages/eventDetailPage";  
 import PaymentPage from "./pages/payments"; 
+import PaymentSuccess from "./pages/paymentSuccess"; 
 
 
 function App() {
@@ -31,6 +32,11 @@ function App() {
         <Route path="/event/:eventId" element={<EventDetails />} />
 
         <Route path="/payment/:eventId" element={<PaymentPage />} />
+
+            <Route
+      path="/payment-success/:eventId"
+      element={<PaymentSuccess />}
+    />
       </Routes>
     </>
   );

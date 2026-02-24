@@ -34,7 +34,9 @@ function PaymentPage() {
       // ⭐ FREE EVENT (no payment needed)
       if (event.registrationFee === 0) {
         alert("Participation Confirmed ✅");
-        navigate(-1);
+        navigate(`/payment-success/${event._id}`, {
+          state: { eventName: event.title },
+        }); 
         return;
       }
 
