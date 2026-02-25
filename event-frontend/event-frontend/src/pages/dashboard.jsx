@@ -13,6 +13,10 @@ import API from "../services/api";
 // Modal component used to create a new club
 import AddClubModal from "../components/AddClubModal";
 
+import { jwtDecode } from "jwt-decode";
+const token = localStorage.getItem("token");
+const role = token ? jwtDecode(token).role : null;
+
 // CSS styling for dashboard
 import "./dashboard.css";
 
@@ -81,12 +85,14 @@ function Dashboard() {
         </h2>
 
         {/* Button to open Add Club modal */}
+        {role === "admin" && (
         <button
           className="add-btn"
-          onClick={() => setShowModal(true)} // open modal
+          onClick={() => setShowModal(true)}
         >
           + Add Club
         </button>
+      )}
 
       </div>
 

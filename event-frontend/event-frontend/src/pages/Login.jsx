@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import { getRoleFromToken } from "../components/auth"; 
 
 function Login() {
 
@@ -30,9 +31,16 @@ function Login() {
 
       toast.success("Login Successful ✅");
 
-      // go to dashboard
+      // go to dashboard 
+
       setTimeout(() => {
-        navigate("/dashboard");
+        const role = getRoleFromToken();
+
+        if (role === "admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/dashboard"); 
+        }
       }, 800);
 
     } catch (err) {

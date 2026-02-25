@@ -5,6 +5,10 @@ import AddEventModal from "../components/addEventModal";
 import EventCard from "../components/eventCard";
 import EventDetailsModal from "../pages/eventDetailPage"; 
 import "./dashboard.css";
+import { jwtDecode } from "jwt-decode";
+const token = localStorage.getItem("token");
+const role = token ? jwtDecode(token).role : null;
+
 
 function ClubEvents() {
 
@@ -61,12 +65,14 @@ function ClubEvents() {
           {clubName || "Club Events"}
         </h2>
 
+              {role === "admin" && (
         <button
           className="add-btn"
           onClick={() => setShowModal(true)}
         >
-          + Add Event
+          + Add Club
         </button>
+      )}
       </div>
 
       {/* ===== ADD EVENT MODAL ===== */}
