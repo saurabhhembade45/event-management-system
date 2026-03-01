@@ -1,11 +1,13 @@
 /* ================= DASHBOARD ================= */
 
 .dashboard {
-    padding: 25px;
-    background: #f5f7fb;
-    min-height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
-  }
+  padding: 25px;
+  padding-top: 95px;   /* add this line (header height + little space) */
+  background: #f5f7fb;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
   
   /* ================= ADD BUTTON ================= */
   
@@ -34,7 +36,213 @@
   }
   
   /* ================= CARD ================= */
-  
+  /* ================= DASHBOARD ================= */
+
+.dashboard {
+  padding: 25px;
+  padding-top: 95px; /* space for fixed header */
+  background: #f5f7fb;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* ================= FIXED HEADER ================= */
+
+.dashboard-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 1000;
+}
+
+/* header layout */
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* title LEFT, button RIGHT */
+  width: 100%;
+  height: 100%;
+  padding: 0 25px;
+}
+
+.dashboard-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+
+/* ================= ADD CLUB BUTTON ================= */
+
+.add-btn {
+  padding: 10px 18px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.add-btn:hover {
+  background: #4338ca;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.add-btn:active {
+  transform: scale(0.97);
+}
+
+
+/* ================= CONTENT BELOW HEADER ================= */
+
+.dashboard-content {
+  margin-top: 20px;
+}
+
+
+/* ================= GRID ================= */
+
+.club-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+
+/* ================= CARD ================= */
+
+.club-card {
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.25s ease;
+}
+
+.club-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.15);
+}
+
+
+/* ================= IMAGE ================= */
+
+.club-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* ================= CONTENT ================= */
+
+.club-content {
+  padding: 16px 18px;
+}
+
+.club-content h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #111827;
+}
+
+.club-content p {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+
+/* ================= EVENT DETAILS ================= */
+
+.event-details-card-page {
+  max-width: 700px;
+  margin: auto;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+}
+
+.event-details-card-page img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+
+/* ================= PARTICIPATE ================= */
+
+.participate-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.participate-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.participate-btn:hover {
+  background: #43a047;
+  transform: scale(1.05);
+}
+
+
+/* ================= PAYMENT ================= */
+
+.payment-card {
+  max-width: 500px;
+  margin: auto;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.payment-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.pay-btn {
+  margin-top: 20px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.pay-btn:hover {
+  background: #43a047;
+  transform: scale(1.05);
+}
   .club-card {
     background: white;
     border-radius: 14px;
@@ -78,17 +286,22 @@
   
   /* ================= ADD CLUB BUTTON ================= */
 
-.add-btn {
+  .add-btn {
+    padding: 10px 18px;
     background: #4f46e5;
     color: white;
     border: none;
-    padding: 10px 18px;
-    font-size: 15px;
-    font-weight: 600;
     border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    margin-bottom: 20px;
-    transition: all 0.25s ease;
+    transition: 0.2s;
+  
+    margin-right: 50px; /* moves LEFT */
+    margin-top: 22px;    /* moves DOWN */
+  }
+  
+  .add-btn:hover {
+    background: #4338ca;
   }
   
   /* Hover effect */
@@ -102,12 +315,32 @@
   .add-btn:active {
     transform: scale(0.97);
   }
-  .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-  }
+  /* fixed header */
+ /* fixed header */
+.dashboard-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 1000;
+}
+
+/* inner layout container */
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* name left, button right */
+  width: 100%;
+  padding: 0 25px;
+}
+
+/* push cards below header */
+.dashboard-content {
+  margin-top: 90px;
+}
   
   .dashboard-title {
     font-size: 24px;

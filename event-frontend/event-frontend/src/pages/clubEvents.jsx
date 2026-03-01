@@ -3,12 +3,12 @@ import { useParams } from "react-router-dom";
 import API from "../services/api";
 import AddEventModal from "../components/addEventModal";
 import EventCard from "../components/eventCard";
-import EventDetailsModal from "../pages/eventDetailPage"; 
+import EventDetailsModal from "../pages/eventDetailPage";
 import "./dashboard.css";
+
 import { jwtDecode } from "jwt-decode";
 const token = localStorage.getItem("token");
 const role = token ? jwtDecode(token).role : null;
-
 
 function ClubEvents() {
 
@@ -19,7 +19,7 @@ function ClubEvents() {
   const [showModal, setShowModal] = useState(false);
   const [clubName, setClubName] = useState("");
 
-  // ⭐ selected event for details modal
+  // selected event for modal
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   // ================= FETCH EVENTS =================
@@ -46,12 +46,12 @@ function ClubEvents() {
     fetchEvents();
   }, [clubId]);
 
-  // ⭐ open details modal
+  // open details modal
   const openDetails = (event) => {
     setSelectedEvent(event);
   };
 
-  // ⭐ close details modal
+  // close details modal
   const closeDetails = () => {
     setSelectedEvent(null);
   };
@@ -59,53 +59,64 @@ function ClubEvents() {
   return (
     <div className="dashboard">
 
-      {/* ===== HEADER ===== */}
+      {/* ================= HEADER ================= */}
       <div className="dashboard-header">
-        <h2 className="dashboard-title">
-          {clubName || "Club Events"}
-        </h2>
+        <div className="header-inner">
 
-              {role === "admin" && (
-        <button
-          className="add-btn"
-          onClick={() => setShowModal(true)}
-        >
-          + Add Club
-        </button>
-      )}
+          <h2 className="dashboard-title">
+            {clubName || "Club Events"}
+          </h2>
+
+          {role === "admin" && (
+            <button
+              className="add-btn"
+              onClick={() => setShowModal(true)}
+            >
+              + Add Event
+            </button>
+          )}
+
+        </div>
       </div>
 
-      {/* ===== ADD EVENT MODAL ===== */}
-      {showModal && (
-        <AddEventModal
-          close={() => setShowModal(false)}
-          refresh={fetchEvents}
-          clubId={clubId}
-        />
-      )}
 
-      {/* ===== CONTENT ===== */}
-      {loading ? (
-        <div className="loading">
-          <h2>Loading events...</h2>
-        </div>
-      ) : (
-        <div className="club-grid">
-          {events.length === 0 ? (
-            <h3>No events yet</h3>
-          ) : (
-            events.map((event) => (
-              <EventCard
-                key={event._id}
-                event={event}
-                openDetails={openDetails}   // ⭐ pass click handler
-              />
-            ))
-          )}
-        </div>
-      )}
+      {/* ================= PAGE CONTENT ================= */}
+      <div className="dashboard-content">
 
-      {/* ===== EVENT DETAILS MODAL ===== */}
+        {/* ADD EVENT MODAL */}
+        {showModal && (
+          <AddEventModal
+            close={() => setShowModal(false)}
+            refresh={fetchEvents}
+            clubId={clubId}
+          />
+        )}
+
+        {/* EVENTS LIST */}
+        {loading ? (
+          <div className="loading">
+            <h2>Loading events...</h2>
+          </div>
+        ) : (
+          <div className="club-grid">
+            {events.length === 0 ? (
+              <h3>No events yet</h3>
+            ) : (
+              events.map((event) => (
+                <EventCard
+                  key={event._id}
+                  event={event}
+                  openDetails={openDetails}
+                />
+              ))
+            )}
+          </div>
+        )}
+
+      </div>
+
+
+      {/* ================= EVENT DETAILS MODAL ================= */}
       {selectedEvent && (
         <EventDetailsModal
           event={selectedEvent}

@@ -1,23 +1,9 @@
 // ================= IMPORTS =================
-
-// React hooks
-// useState -> used to store and update data
-// useEffect -> runs code automatically when component loads
 import { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
-
-// Axios instance used to call backend APIs
 import API from "../services/api";
-
-// Modal component used to create a new club
 import AddClubModal from "../components/AddClubModal";
-
 import { jwtDecode } from "jwt-decode";
-const token = localStorage.getItem("token");
-const role = token ? jwtDecode(token).role : null;
-
-// CSS styling for dashboard
 import "./dashboard.css";
 
 
@@ -25,134 +11,111 @@ import "./dashboard.css";
 function Dashboard() {
 
   const navigate = useNavigate();
-  // clubs -> stores list of clubs fetched from backend
-  // setClubs -> function used to update clubs
+
+  // STATES
   const [clubs, setClubs] = useState([]);
-
-  // showModal -> controls whether AddClub popup is visible
-  // false = hidden, true = visible
   const [showModal, setShowModal] = useState(false);
-
-  // loading -> tells UI whether data is being fetched
-  // true = loading screen shown
-  // false = clubs displayed
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState(null); // ✅ role state
 
 
-  // ================= FETCH CLUBS FUNCTION =================
-  // This function calls backend and gets all clubs
+  // ================= GET ROLE FROM TOKEN =================
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setRole(decoded.role);
+      } catch (err) {
+        console.log("Invalid token");
+      }
+    }
+  }, []);
+
+
+  // ================= FETCH CLUBS =================
   const fetchClubs = async () => {
     try {
-      // Start loading before API call
       setLoading(true);
-
-      // Send GET request to backend route
-      // Backend → MongoDB → returns clubs data
       const res = await API.get("/clubs/getClubs");
-
-      // Save clubs into React state
-      // If clubs undefined, fallback to empty array
       setClubs(res.data.clubs || []);
-
     } catch (error) {
-      // If any error occurs, print it in console
       console.log("Error fetching clubs:", error);
     } finally {
-      // Stop loading after API completes (success or error)
       setLoading(false);
     }
   };
 
 
-  // ================= RUN WHEN PAGE LOADS =================
-  // useEffect runs automatically when component mounts
-  // [] means run only once (like page load)
+  // ================= PAGE LOAD =================
   useEffect(() => {
-    fetchClubs(); // fetch clubs when dashboard opens
+    fetchClubs();
   }, []);
 
 
-  // ================= UI RETURN =================
+  // ================= UI =================
   return (
     <div className="dashboard">
 
-      {/* ===== DASHBOARD HEADER ===== */}
+      {/* ===== FIXED HEADER ===== */}
       <div className="dashboard-header">
+        <div className="header-inner">
 
-        {/* Page Title */}
-        <h2 className="dashboard-title">
-          Welcome to Eventopia, Admin
-        </h2>
+          <h2 className="dashboard-title">
+            Welcome to Eventopia, {role || "User"}
+          </h2>
 
-        {/* Button to open Add Club modal */}
-        {role === "admin" && (
-        <button
-          className="add-btn"
-          onClick={() => setShowModal(true)}
-        >
-          + Add Club
-        </button>
-      )}
+          {/* ✅ Add Club visible only for admin */}
+          {role?.toLowerCase() === "admin" && (
+            <button
+              className="add-btn"
+              onClick={() => setShowModal(true)}
+            >
+              + Add Club
+            </button>
+          )}
 
+        </div>
       </div>
 
 
-      {/* ===== SHOW MODAL ONLY IF showModal IS TRUE ===== */}
-      {showModal && (
-        <AddClubModal
-          close={() => setShowModal(false)} // function to close modal
-          refresh={fetchClubs} // refresh dashboard after adding club
-        />
-      )}
+      {/* ===== CONTENT ===== */}
+      <div className="dashboard-content">
 
+        {/* MODAL */}
+        {showModal && (
+          <AddClubModal
+            close={() => setShowModal(false)}
+            refresh={fetchClubs}
+          />
+        )}
 
-      {/* ================= CONDITIONAL RENDERING ================= */}
-      {/* If loading is true -> show loading UI */}
-      {/* Else -> show club cards */}
+        {/* LOADING OR CLUBS */}
+        {loading ? (
+          <div className="loading">
+            <h2>Loading clubs...</h2>
+          </div>
+        ) : (
+          <div className="club-grid">
+            {clubs.map((club) => (
+              <div
+                className="club-card"
+                key={club._id}
+                onClick={() => navigate(`/club/${club._id}`)}
+              >
+                <img src={club.image} alt={club.name} />
+                <h3>{club.name}</h3>
+                <p>{club.description}</p>
+              </div>
+            ))}
+          </div>
+        )}
 
-      {loading ? (
-
-        // ===== Loading Screen =====
-        <div className="loading">
-          <h2>Loading clubs...</h2>
-        </div>
-
-      ) : (
-
-        // ===== Club Grid =====
-        <div className="club-grid">
-
-          {/* Loop through all clubs using map */}
-          {clubs.map((club) => (
-
-            // Each club card
-            // key is required by React for list rendering
-            <div
-              className="club-card"
-              key={club._id}
-              onClick={() => navigate(`/club/${club._id}`)}
-            >
-
-              {/* Club image */}
-              <img src={club.image} alt={club.name} />
-
-              {/* Club name */}
-              <h3>{club.name}</h3>
-
-              {/* Club description */}
-              <p>{club.description}</p>
-
-            </div>
-          ))}
-
-        </div>
-
-      )}
+      </div>
 
     </div>
   );
 }
 
-
-// Export component so it can be used in routing
 export default Dashboard;
