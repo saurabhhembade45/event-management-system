@@ -5,6 +5,7 @@ const userRoutes = require("./routes/User");
 const clubRoutes = require("./routes/clubRoutes"); 
 const eventRoutes = require("./routes/eventRoutes"); 
 const paymentRoutes = require("./routes/paymentRoutes"); 
+const participantRoutes = require("./routes/participantRoute");
 
 const {connectDB} = require("./config/database");
 const app = express();
@@ -27,6 +28,7 @@ connectDB();
 app.use("/api/v1/clubs", clubRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/payment", paymentRoutes); 
+app.use("/api/v1/participants", participantRoutes);
 
 const PORT = process.env.PORT || 4000;
  

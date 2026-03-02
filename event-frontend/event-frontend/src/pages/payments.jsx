@@ -47,7 +47,7 @@ function PaymentPage() {
 
       // 2️⃣ Razorpay options
       const options = {
-        key: "key_secret", // ⚠️ replace with your Razorpay KEY_ID
+        key: "rzp_test_RL6e1Ke8DvBIBO", // ⚠️ replace with your Razorpay KEY_ID
         amount: data.order.amount,
         currency: "INR",
         name: "Event Registration",
@@ -60,7 +60,9 @@ function PaymentPage() {
           console.log(response);
 
           // after payment success
-          navigate(-1);
+          navigate(`/payment-success/${event._id}`, {
+            state: { eventName: event.title },
+          });
         },
 
         theme: {
