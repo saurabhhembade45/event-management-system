@@ -35,7 +35,7 @@ const PORT = process.env.PORT || 4000;
 
 const { cloudinaryConnect } = require("./config/cloudinary");
 
-cloudinaryConnect();
+cloudinaryConnect(); 
 
 
 app.listen(PORT, () => {

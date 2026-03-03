@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 
 const participantSchema = new mongoose.Schema(
   {
+    // ================= USER REFERENCE =================
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+
     // ================= EVENT REFERENCE =================
     event: {
       type: mongoose.Schema.Types.ObjectId,
@@ -9,7 +16,7 @@ const participantSchema = new mongoose.Schema(
       required: true
     },
 
-    // ================= USER DETAILS =================
+    // ================= PARTICIPANT SNAPSHOT DETAILS =================
     name: {
       type: String,
       required: true,
@@ -19,18 +26,20 @@ const participantSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      lowercase: true
+      lowercase: true,
+      trim: true
     },
 
     phone: {
       type: String,
-      required: true
+      required: true,
+      trim: true
     },
 
-    // ================= EVENT RELATED INFO =================
     college: {
       type: String,
-      default: ""
+      default: "",
+      trim: true
     },
 
     year: {
@@ -42,12 +51,13 @@ const participantSchema = new mongoose.Schema(
         "4th Year",
         "Professional"
       ],
-      default: ""
+      default: null   // ✅ FIXED (no empty string)
     },
 
     emergencyContact: {
       type: String,
-      default: ""
+      default: "",
+      trim: true
     },
 
     requirements: {
@@ -71,5 +81,10 @@ const participantSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+
+// ================= PREVENT DUPLICATE REGISTRATION =================
+// One user cannot register for same event twice
+participantSchema.index({ user: 1, event: 1 }, { unique: true });
 
 module.exports = mongoose.model("Participant", participantSchema);

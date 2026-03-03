@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { registerParticipant } = require("../controllers/participantController");  
 
-router.post("/participate/:eventId", registerParticipant); 
+const {getMyParticipations} = require("../controllers/getParticipants");
+const { auth } = require("../middleware/authrz"); 
+
+router.get("/my", auth, getMyParticipations);
 
 module.exports = router; 
