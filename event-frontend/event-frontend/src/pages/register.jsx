@@ -92,18 +92,7 @@ function Register() {
             />
           </div>
 
-          <div className="input-group">
-            <label>Role</label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-            >
-              <option value="student">Student</option>
-              <option value="organizer">Organizer</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+         
 
           <div className="input-group">
             <label>College</label>
