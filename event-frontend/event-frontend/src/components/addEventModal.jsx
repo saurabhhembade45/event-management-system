@@ -4,10 +4,8 @@ import toast from "react-hot-toast";
 
 function AddEventModal({ close, refresh, clubId }) {
 
-  // loading state
   const [loading, setLoading] = useState(false);
 
-  // ⭐ form state (UPDATED)
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -40,8 +38,6 @@ function AddEventModal({ close, refresh, clubId }) {
       formData.append("description", form.description);
       formData.append("image", form.image);
       formData.append("clubId", clubId);
-
-      // ⭐ new fields
       formData.append("date", form.date);
       formData.append("time", form.time);
       formData.append("location", form.location);
@@ -58,8 +54,8 @@ function AddEventModal({ close, refresh, clubId }) {
 
       toast.success("Event created successfully 🎉");
 
-      refresh(); // reload events
-      close();   // close modal
+      refresh();
+      close();
 
     } catch (error) {
       toast.error("Failed to create event");
@@ -70,84 +66,105 @@ function AddEventModal({ close, refresh, clubId }) {
   };
 
   return (
-    <div className="modal">
-      <form onSubmit={handleSubmit}>
-        <h2>Add Event</h2>
+    <div className="modal-overlay" onClick={close}>
+      <div
+        className="form-card"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2>Add New Event</h2>
 
-        {/* TITLE */}
-        <input
-          name="title"
-          placeholder="Event Title"
-          onChange={handleChange}
-          required
-        />
+        <form onSubmit={handleSubmit}>
 
-        {/* DESCRIPTION */}
-        <input
-          name="description"
-          placeholder="Description"
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="text"
+            name="title"
+            value={form.title}
+            placeholder="Event Title"
+            onChange={handleChange}
+            required
+          />
 
-        {/* IMAGE */}
-        <input
-          type="file"
-          name="image"
-          onChange={handleChange}
-          required
-        />
+          <textarea
+            name="description"
+            value={form.description}
+            placeholder="Description"
+            onChange={handleChange}
+            required
+          />
 
-        {/* DATE */}
-        <input
-          type="date"
-          name="date"
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="file"
+            name="image"
+            onChange={handleChange}
+            required
+          />
 
-        {/* TIME */}
-        <input
-          type="time"
-          name="time"
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="date"
+            name="date"
+            value={form.date}
+            onChange={handleChange}
+            required
+          />
 
-        {/* LOCATION */}
-        <input
-          name="location"
-          placeholder="Location"
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="time"
+            name="time"
+            value={form.time}
+            onChange={handleChange}
+            required
+          />
 
+          <input
+            type="text"
+            name="location"
+            value={form.location}
+            placeholder="Location"
+            onChange={handleChange}
+            required
+          />
 
-        {/* REGISTRATION FEE */}
-        <input
-          type="number"
-          name="registrationFee"
-          placeholder="Registration Fee (₹)"
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="url"
+            name="registrationLink"
+            value={form.registrationLink}
+            placeholder="Registration Link (optional)"
+            onChange={handleChange}
+          />
 
-        {/* SUBMIT BUTTON */}
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            cursor: loading ? "not-allowed" : "pointer",
-            opacity: loading ? 0.6 : 1,
-          }}
-        >
-          {loading ? "Creating..." : "Create Event"}
-        </button>
+          <input
+            type="number"
+            name="registrationFee"
+            value={form.registrationFee}
+            placeholder="Registration Fee (₹)"
+            onChange={handleChange}
+            required
+          />
 
-        <button type="button" onClick={close}>
-          Cancel
-        </button>
-      </form>
+          <div className="form-buttons">
+            <button
+              type="submit"
+              disabled={loading}
+              className="primary-btn"
+              style={{
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.7 : 1,
+              }}
+            >
+              {loading ? "Creating..." : "Create Event"}
+            </button>
+
+            <button
+              type="button"
+              onClick={close}
+              className="secondary-btn"
+            >
+              Cancel
+            </button>
+          </div>
+
+        </form>
+      </div>
     </div>
   );
 }

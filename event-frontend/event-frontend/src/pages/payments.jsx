@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import API from "../services/api";
 import "./dashboard.css";
 
@@ -7,62 +7,77 @@ function PaymentPage() {
 
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ Safe participant data (state OR localStorage)
+  const participantData =
+    location.state?.participantDetails ||
+    JSON.parse(localStorage.getItem("participantData"));
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ================= FETCH EVENT =================
-  const fetchEvent = async () => {
-    try {
-      const res = await API.get(`/events/${eventId}`);
-      setEvent(res.data.event);
-    } catch (error) {
-      console.log("Error fetching event:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+
+    // ❌ If no participant data, redirect back
+    if (!participantData) {
+      alert("Participant details missing. Please register again.");
+      navigate(-1);
+      return;
+    }
+
+    const fetchEvent = async () => {
+      try {
+        const res = await API.get(`/events/${eventId}`);
+        setEvent(res.data.event);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchEvent();
   }, [eventId]);
 
-  // ================= PAYMENT FUNCTION =================
   const handlePayment = async () => {
     try {
 
-      // ⭐ FREE EVENT (no payment needed)
-      if (event.registrationFee === 0) {
-        alert("Participation Confirmed ✅");
-        navigate(`/payment-success/${event._id}`, {
-          state: { eventName: event.title },
-        }); 
-        return;
-      }
-
-      // 1️⃣ Create order from backend
+      // ⭐ Create Order
       const { data } = await API.post("/payment/createOrder", {
         eventId: event._id,
       });
 
-      // 2️⃣ Razorpay options
       const options = {
-        key: "rzp_test_RL6e1Ke8DvBIBO", // ⚠️ replace with your Razorpay KEY_ID
+        key: "rzp_test_RL6e1Ke8DvBIBO",
         amount: data.order.amount,
         currency: "INR",
         name: "Event Registration",
         description: event.title,
         order_id: data.order.id,
 
-        // 3️⃣ Success handler
-        handler: function (response) {
-          alert("Payment Successful ✅");
-          console.log(response);
+        handler: async function (response) {
 
-          // after payment success
-          navigate(`/payment-success/${event._id}`, {
-            state: { eventName: event.title },
-          });
+          try {
+
+            await API.post("/payment/verify-payment", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              eventId: event._id,
+              ...participantData
+            });
+
+            // 🧹 Clear stored data after success
+            localStorage.removeItem("participantData");
+
+            navigate(`/payment-success/${event._id}`, {
+              state: { eventName: event.title }
+            });
+
+          } catch (error) {
+            alert("Payment verification failed");
+          }
         },
 
         theme: {
@@ -70,37 +85,21 @@ function PaymentPage() {
         },
       };
 
-      // 4️⃣ Open Razorpay popup
       const razor = new window.Razorpay(options);
       razor.open();
 
     } catch (error) {
-      console.log("Payment Error:", error);
+      console.log(error);
       alert("Payment failed");
     }
   };
 
-  // ================= LOADING =================
-  if (loading) {
-    return (
-      <div className="dashboard">
-        <h2>Loading payment details...</h2>
-      </div>
-    );
-  }
-
-  if (!event) {
-    return (
-      <div className="dashboard">
-        <h2>Event not found</h2>
-      </div>
-    );
-  }
+  if (loading) return <h2>Loading...</h2>;
+  if (!event) return <h2>Event not found</h2>;
 
   return (
     <div className="dashboard">
 
-      {/* BACK BUTTON */}
       <button
         className="add-btn"
         onClick={() => navigate(-1)}
@@ -122,17 +121,11 @@ function PaymentPage() {
         <hr />
 
         <h3>
-          Registration Fee:{" "}
-          {event.registrationFee === 0
-            ? "Free"
-            : `₹${event.registrationFee}`}
+          Registration Fee: ₹{event.registrationFee}
         </h3>
 
-        {/* PAY BUTTON */}
         <button className="pay-btn" onClick={handlePayment}>
-          {event.registrationFee === 0
-            ? "Confirm Participation"
-            : "Pay Now"}
+          Pay Now
         </button>
 
       </div>

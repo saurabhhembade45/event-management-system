@@ -7,8 +7,6 @@ import EventDetailsModal from "../pages/eventDetailPage";
 import "./dashboard.css";
 
 import { jwtDecode } from "jwt-decode";
-const token = localStorage.getItem("token");
-const role = token ? jwtDecode(token).role : null;
 
 function ClubEvents() {
 
@@ -18,9 +16,19 @@ function ClubEvents() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [clubName, setClubName] = useState("");
-
-  // selected event for modal
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  // ✅ ROLE STATE (FIXED)
+  const [role, setRole] = useState(null);
+
+  // ================= GET ROLE FROM TOKEN =================
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decoded = jwtDecode(token);
+      setRole(decoded.role);
+    }
+  }, []);
 
   // ================= FETCH EVENTS =================
   const fetchEvents = async () => {
@@ -67,18 +75,20 @@ function ClubEvents() {
             {clubName || "Club Events"}
           </h2>
 
+          {/* ✅ ROLE CHECK WORKING PROPERLY NOW */}
           {role === "admin" && (
+            <div className="club-event-btn">
             <button
               className="add-btn"
               onClick={() => setShowModal(true)}
             >
               + Add Event
             </button>
+          </div>
           )}
 
         </div>
       </div>
-
 
       {/* ================= PAGE CONTENT ================= */}
       <div className="dashboard-content">
@@ -114,7 +124,6 @@ function ClubEvents() {
         )}
 
       </div>
-
 
       {/* ================= EVENT DETAILS MODAL ================= */}
       {selectedEvent && (

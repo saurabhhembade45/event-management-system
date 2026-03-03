@@ -8,7 +8,7 @@ import ClubEvents from "./pages/clubEvents";
 import EventDetails from "./pages/eventDetailPage";  
 import PaymentPage from "./pages/payments"; 
 import PaymentSuccess from "./pages/paymentSuccess"; 
-
+import MyParticipation from "./pages/myParticipation"; 
 
 function App() {
   return (
@@ -37,6 +37,7 @@ function App() {
       path="/payment-success/:eventId"
       element={<PaymentSuccess />}
     />
+    <Route path="/my-participation" element={<MyParticipation />} />
       </Routes>
     </>
   );

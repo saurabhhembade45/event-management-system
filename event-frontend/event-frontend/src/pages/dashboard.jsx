@@ -66,15 +66,25 @@ function Dashboard() {
             Welcome to Eventopia, {role || "User"}
           </h2>
 
-          {/* ✅ Add Club visible only for admin */}
-          {role?.toLowerCase() === "admin" && (
-            <button
-              className="add-btn"
-              onClick={() => setShowModal(true)}
-            >
-              + Add Club
-            </button>
-          )}
+                <div className="header-buttons">
+
+        {role?.toLowerCase() === "admin" && (
+          <button
+            className="add-btn"
+            onClick={() => setShowModal(true)}
+          >
+            + Add Club
+          </button>
+        )}
+         <button
+          className="add-btn"
+          onClick={() => navigate("/my-participation")}
+        >
+          My Participation
+        </button>
+
+
+      </div>
 
         </div>
       </div>

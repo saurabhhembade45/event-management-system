@@ -11,7 +11,6 @@ function EventDetailsPage() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ===== PARTICIPANT FORM STATE =====
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -26,18 +25,18 @@ function EventDetailsPage() {
   });
 
   // ================= FETCH EVENT =================
-  const fetchEvent = async () => {
-    try {
-      const res = await API.get(`/events/${eventId}`);
-      setEvent(res.data.event);
-    } catch (error) {
-      console.log("Error fetching event:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const res = await API.get(`/events/${eventId}`);
+        setEvent(res.data.event);
+      } catch (error) {
+        console.log("Error fetching event:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchEvent();
   }, [eventId]);
 
@@ -58,41 +57,29 @@ function EventDetailsPage() {
     try {
       setSubmitting(true);
 
-      const res = await API.post(
-        `/participants/participate/${event._id}`,
-        formData
+      // 🔥 Save to localStorage (IMPORTANT FIX)
+      localStorage.setItem(
+        "participantData",
+        JSON.stringify(formData)
       );
 
-      const participant = res.data.participant;
-
-      // reset form
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        college: "",
-        year: "",
-        emergencyContact: "",
-        requirements: "",
-      });
-
-      // close modal
-      setShowForm(false);
-
-      // go to payment page with participantId
+      // Navigate to payment page
       navigate(`/payment/${event._id}`, {
-        state: { participantId: participant._id }
+        state: {
+          participantDetails: formData
+        }
       });
+
+      setShowForm(false);
 
     } catch (error) {
       console.log(error);
-      alert("Registration failed");
+      alert("Something went wrong");
     } finally {
       setSubmitting(false);
     }
   };
 
-  // ================= LOADING =================
   if (loading) {
     return (
       <div className="dashboard">
@@ -101,7 +88,6 @@ function EventDetailsPage() {
     );
   }
 
-  // ================= NOT FOUND =================
   if (!event) {
     return (
       <div className="dashboard">
@@ -113,7 +99,6 @@ function EventDetailsPage() {
   return (
     <div className="dashboard">
 
-      {/* BACK BUTTON */}
       <button
         className="add-btn"
         onClick={() => navigate(-1)}
@@ -122,13 +107,9 @@ function EventDetailsPage() {
         ← Back
       </button>
 
-      {/* EVENT DETAILS CARD */}
       <div className="event-details-card-page">
-
         <img src={event.image} alt={event.title} />
-
         <h1>{event.title}</h1>
-
         <p>{event.description}</p>
 
         <hr />
@@ -143,10 +124,8 @@ function EventDetailsPage() {
             ? "Free"
             : `₹${event.registrationFee}`}
         </p>
-
       </div>
 
-      {/* PARTICIPATE BUTTON */}
       <div className="participate-container">
         <button
           className="participate-btn"
@@ -156,7 +135,6 @@ function EventDetailsPage() {
         </button>
       </div>
 
-      {/* ================= PARTICIPANT FORM MODAL ================= */}
       {showForm && (
         <div
           className="modal-overlay"
@@ -206,6 +184,7 @@ function EventDetailsPage() {
                 name="year"
                 value={formData.year}
                 onChange={handleChange}
+                required
               >
                 <option value="">Select Year</option>
                 <option>1st Year</option>
@@ -231,9 +210,7 @@ function EventDetailsPage() {
 
               <div className="form-buttons">
                 <button type="submit" disabled={submitting}>
-                  {submitting
-                    ? "Processing..."
-                    : "Continue to Payment"}
+                  {submitting ? "Processing..." : "Continue to Payment"}
                 </button>
 
                 <button
