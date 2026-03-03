@@ -3,9 +3,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken"); 
 
 exports.register = async(req,res) => {
-    try {
-        console.log("JWT SECRET:", process.env.JWT_SECRET);
-        const {username, email, password, role, college} = req.body;  
+    try { 
+        const {username, email, password, college} = req.body;  
 
         const existingUser = await User.findOne({email}); 
         
@@ -16,6 +15,14 @@ exports.register = async(req,res) => {
             }); 
         }
         const hashedPass = await bcrypt.hash(password, 10); 
+
+        const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+
+        let role = "student";   // default
+
+        if (email === ADMIN_EMAIL) {
+            role = "admin";
+        }
 
         // create User 
         const user = await User.create({
