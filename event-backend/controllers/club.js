@@ -52,3 +52,11 @@ exports.createClub = async (req, res) => {
   }
 }; 
 
+exports.deleteClub = async (req, res) => {
+  try {
+    await Club.findByIdAndDelete(req.params.id);
+    res.json({ message: "Club deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting club" });
+  }
+};

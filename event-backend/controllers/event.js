@@ -95,3 +95,19 @@ exports.getSingleEvent = async (req, res) => {
     });
   }
 };
+
+exports.deleteEvent = async (req, res) => {
+  try {
+    await Event.findByIdAndDelete(req.params.id);
+    res.json({ 
+      success: true,
+      message: "Event deleted successfully" 
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ 
+      success: false,
+      message: "Error deleting event" 
+    });
+  }
+};
