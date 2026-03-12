@@ -4,7 +4,6 @@ import API from "../services/api";
 import "./dashboard.css";
 
 function PaymentPage() {
-
   const { eventId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,14 +17,12 @@ function PaymentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     // ❌ If no participant data, redirect back
     if (!participantData) {
       alert("Participant details missing. Please register again.");
       navigate(-1);
       return;
     }
-
     const fetchEvent = async () => {
       try {
         const res = await API.get(`/events/${eventId}`);
@@ -36,18 +33,15 @@ function PaymentPage() {
         setLoading(false);
       }
     };
-
     fetchEvent();
   }, [eventId]);
 
   const handlePayment = async () => {
     try {
-
       // ⭐ Create Order
       const { data } = await API.post("/payment/createOrder", {
         eventId: event._id,
       });
-
       const options = {
         key: "rzp_test_RL6e1Ke8DvBIBO",
         amount: data.order.amount,
@@ -55,39 +49,30 @@ function PaymentPage() {
         name: "Event Registration",
         description: event.title,
         order_id: data.order.id,
-
         handler: async function (response) {
-
           try {
-
             await API.post("/payment/verify-payment", {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               eventId: event._id,
-              ...participantData
+              ...participantData,
             });
-
             // 🧹 Clear stored data after success
             localStorage.removeItem("participantData");
-
             navigate(`/payment-success/${event._id}`, {
-              state: { eventName: event.title }
+              state: { eventName: event.title },
             });
-
           } catch (error) {
             alert("Payment verification failed");
           }
         },
-
         theme: {
           color: "#4caf50",
         },
       };
-
       const razor = new window.Razorpay(options);
       razor.open();
-
     } catch (error) {
       console.log(error);
       alert("Payment failed");
@@ -99,35 +84,18 @@ function PaymentPage() {
 
   return (
     <div className="dashboard">
-
-      <button
-        className="add-btn"
-        onClick={() => navigate(-1)}
-        style={{ marginBottom: "20px" }}
-      >
-        ← Back
-      </button>
-
       <div className="payment-card">
-
         <h1>Event Registration</h1>
-
         <img src={event.image} alt={event.title} />
-
         <h2>{event.title}</h2>
-
         <p>{event.description}</p>
-
         <hr />
-
         <h3>
           Registration Fee: ₹{event.registrationFee}
         </h3>
-
         <button className="pay-btn" onClick={handlePayment}>
           Pay Now
         </button>
-
       </div>
     </div>
   );

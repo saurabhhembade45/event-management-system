@@ -14,6 +14,9 @@ function EventDetailsPage() {
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // NEW STATE
+  const [participated, setParticipated] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,8 +31,17 @@ function EventDetailsPage() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
+
         const res = await API.get(`/events/${eventId}`);
         setEvent(res.data.event);
+
+        // CHECK PARTICIPATION
+        const participation = await API.get(`/participants/check/${eventId}`);
+
+        if (participation.data.participated) {
+          setParticipated(true);
+        }
+
       } catch (error) {
         console.log("Error fetching event:", error);
       } finally {
@@ -57,13 +69,11 @@ function EventDetailsPage() {
     try {
       setSubmitting(true);
 
-      // 🔥 Save to localStorage (IMPORTANT FIX)
       localStorage.setItem(
         "participantData",
         JSON.stringify(formData)
       );
 
-      // Navigate to payment page
       navigate(`/payment/${event._id}`, {
         state: {
           participantDetails: formData
@@ -99,14 +109,6 @@ function EventDetailsPage() {
   return (
     <div className="dashboard">
 
-      <button
-        className="add-btn"
-        onClick={() => navigate(-1)}
-        style={{ marginBottom: "20px" }}
-      >
-        ← Back
-      </button>
-
       <div className="event-details-card-page">
         <img src={event.image} alt={event.title} />
         <h1>{event.title}</h1>
@@ -127,17 +129,24 @@ function EventDetailsPage() {
       </div>
 
       <div className="participate-container">
+
         <button
           className="participate-btn"
+          disabled={participated}
           onClick={() => setShowForm(true)}
+          style={{
+            background: participated ? "#22c55e" : "",
+            cursor: participated ? "not-allowed" : "pointer"
+          }}
         >
-          Participate Now
+          {participated ? "✔ Participated" : "Participate Now"}
         </button>
+
       </div>
 
       {showForm && (
         <div
-          className="modal-overlay"
+          className="modal-overlay participant-overlay"
           onClick={() => setShowForm(false)}
         >
           <div
