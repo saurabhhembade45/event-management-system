@@ -27,9 +27,7 @@ function MyParticipation() {
     <div className="dashboard">
       <div className="dashboard-header">
         <div className="header-inner">
-          <h2 className="dashboard-title">
-            My Participated Events
-          </h2>
+          <h2 className="dashboard-title">My Participated Events</h2>
         </div>
       </div>
 
@@ -53,10 +51,16 @@ function MyParticipation() {
         ) : (
           <div className="club-grid">
             {events.map((item) => (
-              <div className="club-card" key={item._id}>
+              <div
+                className="club-card"
+                key={item._id}
+                onClick={() => navigate(`/event/${item.event._id}`)}
+              >
                 <img src={item.event.image} alt={item.event.title} />
-                <h3>{item.event.title}</h3>
-                <p>{item.event.description}</p>
+                <div className="club-content">
+                  <h3>{item.event.title}</h3>
+                  <p>{item.event.description}</p>
+                </div>
               </div>
             ))}
           </div>

@@ -3,6 +3,7 @@ import { Trash2 } from "lucide-react";
 
 function EventCard({ event, onDelete }) {
   const navigate = useNavigate();
+
   return (
     <div
       className="club-card"
@@ -23,12 +24,16 @@ function EventCard({ event, onDelete }) {
       )}
 
       <img src={event.image} alt={event.title} />
-      <h3>{event.title}</h3>
-      <p>
-        {event.description.length > 70
-          ? event.description.substring(0, 70) + "..."
-          : event.description}
-      </p>
+
+      {/* ===== FIX: wrap text in club-content for padding + dark bg ===== */}
+      <div className="club-content">
+        <h3>{event.title}</h3>
+        <p>
+          {event.description.length > 70
+            ? event.description.substring(0, 70) + "..."
+            : event.description}
+        </p>
+      </div>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import EventDetails from "./pages/eventDetailPage";
 import PaymentPage from "./pages/payments"; 
 import PaymentSuccess from "./pages/paymentSuccess"; 
 import MyParticipation from "./pages/myParticipation"; 
+import AllEvents from "./pages/AllEvents"; 
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
       element={<PaymentSuccess />}
     />
     <Route path="/my-participation" element={<MyParticipation />} />
+    <Route path="/all-events" element={<AllEvents />} />
       </Routes>
     </>
   );

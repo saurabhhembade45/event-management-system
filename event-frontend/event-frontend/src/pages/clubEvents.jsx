@@ -44,6 +44,7 @@ function ClubEvents() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [role, setRole] = useState(null);
   const [confirmEventId, setConfirmEventId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // ================= GET ROLE FROM TOKEN =================
   useEffect(() => {
@@ -86,15 +87,15 @@ function ClubEvents() {
     }
   };
 
-  // open details modal
-  const openDetails = (event) => {
-    setSelectedEvent(event);
-  };
+  const openDetails = (event) => setSelectedEvent(event);
+  const closeDetails = () => setSelectedEvent(null);
 
-  // close details modal
-  const closeDetails = () => {
-    setSelectedEvent(null);
-  };
+  // ================= FILTERED EVENTS =================
+  const filteredEvents = events.filter(
+    (event) =>
+      event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||   // ← FIXED: was event.name
+      event.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="dashboard">
@@ -115,6 +116,40 @@ function ClubEvents() {
           <h2 className="dashboard-title">
             {clubName || "Club Events"}
           </h2>
+
+          {/* ===== SEARCH BAR ===== */}
+          <div className="search-wrapper">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              className="search-input"
+              type="text"
+              placeholder="Search events..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                className="search-clear-btn"
+                onClick={() => setSearchQuery("")}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           {role === "admin" && (
             <div className="club-event-btn">
               <button
@@ -153,9 +188,44 @@ function ClubEvents() {
         ) : (
           <div className="club-grid">
             {events.length === 0 ? (
-              <h3>No events yet</h3>
+
+              /* ===== NO EVENTS AT ALL ===== */
+              <div className="no-events">
+                <div className="no-events-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                    <line x1="10" y1="15" x2="14" y2="15" />
+                    <line x1="12" y1="13" x2="12" y2="17" />
+                  </svg>
+                </div>
+                <h3>No Events Yet</h3>
+                <p>
+                  {role === "admin"
+                    ? `This club has no events yet. Click "Add Event" to create the first one.`
+                    : "This club hasn't added any events yet. Check back later!"}
+                </p>
+              </div>
+
+            ) : filteredEvents.length === 0 ? (
+
+              /* ===== NO SEARCH RESULTS ===== */
+              <div className="no-events">
+                <div className="no-events-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </div>
+                <h3>No events found</h3>
+                <p>No events match "{searchQuery}". Try a different keyword.</p>
+              </div>
+
             ) : (
-              events.map((event) => (
+              /* ===== EVENT CARDS ===== */
+              filteredEvents.map((event) => (
                 <EventCard
                   key={event._id}
                   event={event}

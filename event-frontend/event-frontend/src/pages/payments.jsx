@@ -8,7 +8,6 @@ function PaymentPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ Safe participant data (state OR localStorage)
   const participantData =
     location.state?.participantDetails ||
     JSON.parse(localStorage.getItem("participantData"));
@@ -17,7 +16,6 @@ function PaymentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // ❌ If no participant data, redirect back
     if (!participantData) {
       alert("Participant details missing. Please register again.");
       navigate(-1);
@@ -38,7 +36,6 @@ function PaymentPage() {
 
   const handlePayment = async () => {
     try {
-      // ⭐ Create Order
       const { data } = await API.post("/payment/createOrder", {
         eventId: event._id,
       });
@@ -58,7 +55,6 @@ function PaymentPage() {
               eventId: event._id,
               ...participantData,
             });
-            // 🧹 Clear stored data after success
             localStorage.removeItem("participantData");
             navigate(`/payment-success/${event._id}`, {
               state: { eventName: event.title },
@@ -88,11 +84,9 @@ function PaymentPage() {
         <h1>Event Registration</h1>
         <img src={event.image} alt={event.title} />
         <h2>{event.title}</h2>
-        <p>{event.description}</p>
+        {/* description removed */}
         <hr />
-        <h3>
-          Registration Fee: ₹{event.registrationFee}
-        </h3>
+        <h3>Registration Fee: ₹{event.registrationFee}</h3>
         <button className="pay-btn" onClick={handlePayment}>
           Pay Now
         </button>
