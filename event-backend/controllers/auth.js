@@ -18,10 +18,10 @@ exports.register = async(req,res) => {
 
         const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
-        let role = "student";   // default
+        let role = "Student";   // default
 
         if (email === ADMIN_EMAIL) {
-            role = "admin";
+            role = "Admin";
         }
 
         // create User 

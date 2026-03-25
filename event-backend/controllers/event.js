@@ -111,3 +111,13 @@ exports.deleteEvent = async (req, res) => {
     });
   }
 };
+// ================= GET ALL EVENTS =================
+exports.getAllEvents = async (req, res) => {
+  try {
+    const events = await Event.find().sort({ createdAt: -1 });
+    res.status(200).json({ success: true, events });
+  } catch (error) {
+    console.log("EXACT ERROR:", error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
