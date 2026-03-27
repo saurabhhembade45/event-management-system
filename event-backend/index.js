@@ -25,7 +25,7 @@ app.use(
   );
   
 app.use("/api/v1", userRoutes); 
-connectDB();
+connectDB(); 
 app.use("/api/v1/clubs", clubRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/payment", paymentRoutes); 
