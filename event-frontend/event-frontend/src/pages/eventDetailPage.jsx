@@ -13,6 +13,7 @@ function EventDetailsPage() {
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [participated, setParticipated] = useState(false);
+  const [participantCount, setParticipantCount] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -41,7 +42,20 @@ function EventDetailsPage() {
         setLoading(false);
       }
     };
+
+    // ✅ Separate fetch so it never blocks event loading
+    const fetchCount = async () => {
+      try {
+        const countRes = await API.get(`/participants/count/${eventId}`);
+        setParticipantCount(countRes.data.count);
+      } catch (error) {
+        console.log("Error fetching participant count:", error);
+        setParticipantCount(0);
+      }
+    };
+
     fetchEvent();
+    fetchCount();
   }, [eventId]);
 
   // ================= HANDLE INPUT =================
@@ -81,9 +95,15 @@ function EventDetailsPage() {
 
       <div className="event-details-card-page">
         <img src={event.image} alt={event.title} />
-        <h1>{event.title}</h1>
 
-        {/* ===== FIX: use div + event-description class for pre-wrap ===== */}
+        {/* ✅ Title + badge inline */}
+        <div className="title-row">
+          <h1>{event.title}</h1>
+          <span className="participant-badge">
+            {participantCount !== null ? `${participantCount} Participants` : "Loading..."}
+          </span>
+        </div>
+
         <div className="event-description">{event.description}</div>
 
         <hr />

@@ -10,7 +10,7 @@ import PaymentPage from "./pages/payments";
 import PaymentSuccess from "./pages/paymentSuccess"; 
 import MyParticipation from "./pages/myParticipation"; 
 import AllEvents from "./pages/AllEvents"; 
-
+import Home from "./pages/Home"; 
 function App() {
   return (
     <>
@@ -40,6 +40,7 @@ function App() {
     />
     <Route path="/my-participation" element={<MyParticipation />} />
     <Route path="/all-events" element={<AllEvents />} />
+     <Route path="/home" element={<Home />} />
       </Routes>
     </>
   );

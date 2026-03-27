@@ -311,7 +311,7 @@ function Dashboard() {
                 key={club._id}
                 onClick={() => navigate(`/club/${club._id}`)}
               >
-                {role === "admin" && (
+                {role === "Admin" && (
                   <button
                     className="delete-icon"
                     onClick={(e) => { e.stopPropagation(); setConfirmClubId(club._id); }}

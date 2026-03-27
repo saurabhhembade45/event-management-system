@@ -150,7 +150,7 @@ function ClubEvents() {
             )}
           </div>
 
-          {role === "admin" && (
+          {role === "Admin" && (
             <div className="club-event-btn">
               <button
                 className="animated-add-btn"
@@ -203,7 +203,7 @@ function ClubEvents() {
                 </div>
                 <h3>No Events Yet</h3>
                 <p>
-                  {role === "admin"
+                  {role === "Admin"
                     ? `This club has no events yet. Click "Add Event" to create the first one.`
                     : "This club hasn't added any events yet. Check back later!"}
                 </p>
@@ -230,7 +230,7 @@ function ClubEvents() {
                   key={event._id}
                   event={event}
                   openDetails={openDetails}
-                  onDelete={role === "admin" ? (id) => setConfirmEventId(id) : null}
+                  onDelete={role === "Admin" ? (id) => setConfirmEventId(id) : null}
                 />
               ))
             )}

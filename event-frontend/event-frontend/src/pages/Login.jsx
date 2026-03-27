@@ -36,7 +36,7 @@ function Login() {
       setTimeout(() => {
         const role = getRoleFromToken();
 
-        if (role === "admin") {
+        if (role === "Admin") {
           navigate("/dashboard");
         } else {
           navigate("/dashboard"); 
