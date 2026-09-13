@@ -1,4 +1,4 @@
-import { Search, Menu } from 'lucide-react';
+import { Search, Menu, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -22,7 +22,7 @@ const Navbar = ({ onMenuToggle }) => {
     <div className="sticky top-4 z-40 px-3 sm:px-6 md:px-8 mb-6">
       <header className="h-16 bg-[#030712]/60 backdrop-blur-2xl border border-white/10 rounded-2xl px-4 sm:px-6 flex items-center justify-between gap-3 shadow-glass">
         
-        {/* Left: Mobile menu toggle + Welcome header */}
+        {/* Left: Mobile menu toggle + Eventopia logo/name for mobile/tab + Desktop welcome header */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <button
             onClick={onMenuToggle}
@@ -32,7 +32,18 @@ const Navbar = ({ onMenuToggle }) => {
             <Menu size={20} />
           </button>
 
-          <h2 className="text-sm sm:text-lg font-semibold text-white tracking-tight truncate">
+          {/* Eventopia Logo & Name - Mobile & Tab Only */}
+          <Link to="/dashboard" className="flex items-center gap-2 md:hidden shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-gradient-premium flex items-center justify-center shadow-glow">
+              <Sparkles size={14} className="text-white" />
+            </div>
+            <span className="text-lg font-extrabold gradient-text tracking-tighter">
+              Eventopia
+            </span>
+          </Link>
+
+          {/* Desktop Welcome Header */}
+          <h2 className="hidden md:block text-sm sm:text-lg font-semibold text-white tracking-tight truncate">
             Welcome to Eventopia, <span className="text-transparent bg-clip-text bg-gradient-premium">{displayName}</span> 👋
           </h2>
         </div>
