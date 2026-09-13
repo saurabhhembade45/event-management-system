@@ -1,0 +1,55 @@
+import { LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+
+const Settings = () => {
+  const { user, logout } = useAuth();
+
+  const displayName = user?.username || user?.email?.split('@')[0] || 'User';
+  const avatarLetter = displayName.charAt(0).toUpperCase();
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div>
+        <h2 className="text-3xl font-bold text-white tracking-tight mb-2">Account Settings</h2>
+        <p className="text-gray-400 mb-8">Manage your profile and account preferences.</p>
+      </div>
+
+      <div className="glass-card p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-premium opacity-20"></div>
+
+        <div className="w-32 h-32 rounded-full bg-gradient-premium p-1 z-10 shadow-lg">
+          <div className="w-full h-full bg-[#0f172a] rounded-full flex items-center justify-center text-4xl font-bold text-white uppercase">
+            {avatarLetter}
+          </div>
+        </div>
+
+        <div className="z-10 text-center md:text-left flex-1">
+          <h1 className="text-3xl font-bold text-white mb-2">{displayName}</h1>
+          <p className="text-gray-400 mb-4">{user?.email}</p>
+
+          <div className="flex justify-center md:justify-start">
+            <span className="bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-sm font-medium border border-indigo-500/30">
+              {user?.email === 'saurabhhembade9518@gmail.com' ? 'Admin' : (user?.role || 'User')}
+            </span>
+          </div>
+        </div>
+
+        <button
+          onClick={logout}
+          className="z-10 flex items-center gap-2 px-6 py-3 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors font-medium shadow-sm hover:shadow-md"
+        >
+          <LogOut size={18} />
+          <span>Logout</span>
+        </button>
+      </div>
+
+      {/* Extra Settings Options can go here in the future */}
+      <div className="glass-card p-6 mt-8">
+        <h3 className="text-xl font-semibold text-white mb-4 tracking-tight">Preferences</h3>
+        <p className="text-gray-400 mb-4">More account settings will be available in future updates.</p>
+      </div>
+    </div>
+  );
+};
+
+export default Settings;

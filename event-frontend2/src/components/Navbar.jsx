@@ -1,0 +1,58 @@
+import { Search } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import NotificationBell from './notifications/NotificationBell';
+
+const Navbar = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/events?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const displayName = user?.username?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
+  const avatarLetter = displayName.charAt(0).toUpperCase();
+
+  return (
+    <div className="sticky top-4 z-40 px-4 md:px-8 mb-6">
+      <header className="h-16 bg-[#030712]/60 backdrop-blur-2xl border border-white/10 rounded-2xl px-6 flex items-center justify-between shadow-glass">
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold text-white tracking-tight">
+            Welcome to Eventopia, <span className="text-transparent bg-clip-text bg-gradient-premium">{displayName}</span> 👋
+          </h2>
+        </div>
+
+        <div className="flex items-center space-x-6">
+          <div className="relative group hidden sm:block">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearch}
+              placeholder="Search events..."
+              className="w-64 bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all focus:bg-white/10"
+            />
+          </div>
+
+          <NotificationBell />
+
+          <Link to="/profile">
+            <div className="w-10 h-10 rounded-full bg-gradient-premium p-[2px] cursor-pointer hover:scale-105 transition-transform">
+              <div className="w-full h-full rounded-full bg-[#0f172a] flex items-center justify-center">
+                <span className="text-sm font-bold text-white">{avatarLetter}</span>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </header>
+    </div>
+  );
+};
+
+export default Navbar;

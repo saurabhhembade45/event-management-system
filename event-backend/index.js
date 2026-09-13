@@ -9,6 +9,7 @@ const participantRoutes = require("./routes/participantRoute");
 const {connectDB} = require("./config/database");
 const app = express();
 const fileUpload = require("express-fileupload");
+const aiRecommendationRoutes = require("./routes/aiRecommendationRoutes");
 
 app.use(cors({
   origin: "http://localhost:5173",
@@ -30,6 +31,7 @@ app.use("/api/v1/clubs", clubRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/payment", paymentRoutes); 
 app.use("/api/v1/participants", participantRoutes);
+app.use("/api/v1/ai", aiRecommendationRoutes);
 
 const PORT = process.env.PORT || 3000;
  
