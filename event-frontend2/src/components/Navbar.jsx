@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import NotificationBell from './notifications/NotificationBell';
+import { getFormattedUserName } from '../utils/userUtils';
 
 const Navbar = ({ onMenuToggle }) => {
   const { user } = useAuth();
@@ -15,7 +16,7 @@ const Navbar = ({ onMenuToggle }) => {
     }
   };
 
-  const displayName = user?.username || user?.name || (user?.email ? user.email.split('@')[0] : '') || 'User';
+  const displayName = getFormattedUserName(user);
   const avatarLetter = displayName.charAt(0).toUpperCase();
 
   return (
@@ -40,8 +41,12 @@ const Navbar = ({ onMenuToggle }) => {
           </Link>
 
           {/* Desktop Welcome Header */}
-          <h2 className="hidden md:block text-sm sm:text-lg font-semibold text-white tracking-tight truncate">
-            Welcome to Eventopia, <span className="text-transparent bg-clip-text bg-gradient-premium">{displayName}</span> 👋
+          <h2 className="hidden md:flex items-center gap-1.5 text-base lg:text-xl font-semibold text-gray-200 tracking-tight truncate">
+            <span>Welcome to Eventopia,</span>
+            <span className="text-lg lg:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-premium ml-0.5 inline-block">
+              {displayName}
+            </span>
+            <span className="inline-block">👋</span>
           </h2>
         </div>
 

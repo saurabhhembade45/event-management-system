@@ -7,13 +7,14 @@ import Loader from '../components/Loader';
 import EmptyState from '../components/EmptyState';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { getFormattedUserName } from '../utils/userUtils';
 
 const Profile = () => {
   const { user, logout } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const displayName = user?.username || user?.email?.split('@')[0] || 'User';
+  const displayName = getFormattedUserName(user);
   const avatarLetter = displayName.charAt(0).toUpperCase();
 
   useEffect(() => {

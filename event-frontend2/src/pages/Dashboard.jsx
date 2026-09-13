@@ -11,10 +11,11 @@ import AnalyticsStatsCard from '../components/analytics/StatsCard';
 import LineChart from '../components/analytics/LineChart';
 import PieChart from '../components/analytics/PieChart';
 import { useAuth } from '../context/AuthContext';
+import { getFormattedUserName } from '../utils/userUtils';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const displayName = user?.username || user?.name || (user?.email ? user.email.split('@')[0] : '') || 'User';
+  const displayName = getFormattedUserName(user);
 
   const [stats, setStats] = useState({ events: 0, clubs: 0 });
   const [recentEvents, setRecentEvents] = useState([]);
@@ -53,8 +54,8 @@ const Dashboard = () => {
     <div className="space-y-8">
       <div>
         {/* Mobile & Tab only: Welcome user_name */}
-        <p className="block md:hidden text-sm sm:text-base font-semibold text-gray-200 mb-1">
-          Welcome <span className="text-transparent bg-clip-text bg-gradient-premium">{displayName}</span>
+        <p className="block md:hidden text-base sm:text-lg font-medium text-gray-300 mb-1">
+          Welcome, <span className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-premium ml-0.5">{displayName}</span> 👋
         </p>
         <h1 className="text-3xl font-bold text-white mb-2">Dashboard Overview</h1>
         <p className="text-gray-400">Here's what's happening in Eventopia today.</p>

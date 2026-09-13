@@ -2,7 +2,23 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { loginUser, registerUser, getDashboard } from '../api/auth';
-import { jwtDecode } from 'jwt-decode';
+
+const parseJwtToken = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    if (!base64Url) return null;
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+};
 
 export const AuthContext = createContext();
 
@@ -16,12 +32,15 @@ export const AuthProvider = ({ children }) => {
       }
       const token = localStorage.getItem('token');
       if (token) {
-        const decoded = jwtDecode(token);
-        return {
-          username: decoded.username || decoded.name || decoded.email?.split('@')[0],
-          email: decoded.email,
-          role: decoded.role,
-        };
+        const decoded = parseJwtToken(token);
+        if (decoded) {
+          return {
+            username: decoded.username || decoded.name || decoded.email?.split('@')[0],
+            name: decoded.name || decoded.username,
+            email: decoded.email,
+            role: decoded.role,
+          };
+        }
       }
       return null;
     } catch {
