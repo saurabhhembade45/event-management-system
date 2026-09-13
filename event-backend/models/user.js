@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");  
 
-const userSchema = new mongoose.Schema( {
+const userSchema = new mongoose.Schema({
     username: {
         type: String, 
-        required: true, 
-        unique: true
+        required: true,
+        unique: false
     }, 
     email: {
         type: String, 
@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema( {
     }, 
     role: {
         type: String, 
-        enum:["Student", "Admin"], 
+        enum: ["Student", "Admin"], 
         default: "Student",
         required: true
     },
@@ -32,6 +32,11 @@ const userSchema = new mongoose.Schema( {
             "MIT WPU"
         ]
     }
-    
-}) 
- module.exports = mongoose.model("User", userSchema); 
+});
+
+const User = mongoose.model("User", userSchema);
+
+// Sync indexes to drop legacy unique index on username in MongoDB
+User.syncIndexes().catch((err) => console.log("Index sync info:", err.message));
+
+module.exports = User;
