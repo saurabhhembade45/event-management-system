@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Info, Calendar, BellRing, CheckCheck, X, Bell, Ticket, Trash2 } from 'lucide-react';
+import { Info, Calendar, BellRing, Check, CheckCheck, X, Bell, Ticket, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 const NotificationDropdown = ({ 
   notifications = [], 
   onMarkAsRead, 
+  onToggleRead,
+  onDeleteNotification,
   onMarkAllAsRead, 
   onClearAll,
   onClose 
@@ -16,33 +18,33 @@ const NotificationDropdown = ({
     switch (type) {
       case 'system':
         return (
-          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0 shadow-sm">
-            <Info size={18} />
+          <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0 shadow-sm">
+            <Info size={17} />
           </div>
         );
       case 'event':
         return (
-          <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 shadow-sm">
-            <Calendar size={18} />
+          <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 shadow-sm">
+            <Calendar size={17} />
           </div>
         );
       case 'booking':
         return (
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 shadow-sm">
-            <Ticket size={18} />
+          <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-sm">
+            <Ticket size={17} />
           </div>
         );
       case 'admin':
       case 'broadcast':
         return (
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 shadow-sm">
-            <BellRing size={18} />
+          <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 shadow-sm">
+            <BellRing size={17} />
           </div>
         );
       default:
         return (
-          <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 shadow-sm">
-            <Bell size={18} />
+          <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 shadow-sm">
+            <Bell size={17} />
           </div>
         );
     }
@@ -67,17 +69,17 @@ const NotificationDropdown = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      initial={{ opacity: 0, y: 12, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed sm:absolute top-20 sm:top-14 right-3 sm:right-0 left-3 sm:left-auto w-[calc(100vw-1.5rem)] sm:w-96 bg-[#030712]/95 backdrop-blur-2xl border border-white/15 shadow-[0_20px_60px_rgba(0,0,0,0.85)] rounded-2xl overflow-hidden z-50 flex flex-col max-h-[85vh]"
+      exit={{ opacity: 0, y: 12, scale: 0.95 }}
+      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed sm:absolute top-20 sm:top-14 right-3 sm:right-0 left-3 sm:left-auto w-[calc(100vw-1.5rem)] sm:w-[400px] bg-[#030712]/95 backdrop-blur-2xl border border-white/15 shadow-[0_25px_65px_rgba(0,0,0,0.9)] rounded-2xl overflow-hidden z-50 flex flex-col max-h-[85vh]"
     >
       {/* Header */}
       <div className="px-4 py-3.5 border-b border-white/10 bg-white/[0.03]">
-        <div className="flex items-center justify-between gap-2 mb-2.5">
+        <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-400">
+            <div className="p-1.5 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400">
               <Bell size={16} />
             </div>
             <h3 className="text-base font-bold text-white tracking-tight">Notifications</h3>
@@ -92,19 +94,19 @@ const NotificationDropdown = ({
             {unreadCount > 0 && (
               <button
                 onClick={onMarkAllAsRead}
-                className="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
+                className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
                 title="Mark all as read"
               >
-                <CheckCheck size={14} />
+                <CheckCheck size={15} />
                 <span className="hidden sm:inline">Mark read</span>
               </button>
             )}
             <button
               onClick={onClose}
-              className="p-1 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+              className="p-1 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors ml-1"
               title="Close"
             >
-              <X size={16} />
+              <X size={17} />
             </button>
           </div>
         </div>
@@ -113,7 +115,7 @@ const NotificationDropdown = ({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFilter('all')}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               filter === 'all'
                 ? 'bg-indigo-600 text-white shadow-md'
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -123,7 +125,7 @@ const NotificationDropdown = ({
           </button>
           <button
             onClick={() => setFilter('unread')}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               filter === 'unread'
                 ? 'bg-indigo-600 text-white shadow-md'
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -135,7 +137,7 @@ const NotificationDropdown = ({
       </div>
 
       {/* Notifications List */}
-      <div className="overflow-y-auto max-h-[360px] custom-scrollbar divide-y divide-white/5">
+      <div className="overflow-y-auto max-h-[380px] custom-scrollbar divide-y divide-white/5">
         {filteredNotifications.length > 0 ? (
           filteredNotifications.map((notification) => (
             <div
@@ -143,7 +145,7 @@ const NotificationDropdown = ({
               onClick={() => {
                 if (!notification.isRead) onMarkAsRead(notification._id);
               }}
-              className={`p-4 flex gap-3.5 transition-all cursor-pointer group ${
+              className={`p-4 flex gap-3.5 transition-all cursor-pointer group relative ${
                 !notification.isRead
                   ? 'bg-indigo-500/[0.08] hover:bg-indigo-500/[0.14] border-l-2 border-indigo-500'
                   : 'hover:bg-white/[0.04] border-l-2 border-transparent opacity-80'
@@ -151,7 +153,7 @@ const NotificationDropdown = ({
             >
               {getIcon(notification.type)}
 
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 pr-6">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <h4 className={`text-xs font-bold truncate ${!notification.isRead ? 'text-white' : 'text-gray-300'}`}>
                     {notification.title || 'Notification'}
@@ -160,13 +162,33 @@ const NotificationDropdown = ({
                     {getTimeAgo(notification.createdAt)}
                   </span>
                 </div>
-                <p className={`text-xs leading-relaxed line-clamp-2 ${!notification.isRead ? 'text-gray-200 font-medium' : 'text-gray-400'}`}>
+                <p className={`text-xs leading-relaxed ${!notification.isRead ? 'text-gray-200 font-medium' : 'text-gray-400'}`}>
                   {notification.message}
                 </p>
               </div>
 
+              {/* Action overlay buttons on hover */}
+              <div className="absolute right-3 top-3.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-[#030712]/90 backdrop-blur-md p-1 rounded-lg border border-white/10 shadow-lg z-10">
+                <button
+                  onClick={(e) => onToggleRead(notification._id, e)}
+                  className={`p-1 rounded hover:bg-white/10 transition-colors ${
+                    notification.isRead ? 'text-gray-400 hover:text-indigo-300' : 'text-indigo-400'
+                  }`}
+                  title={notification.isRead ? 'Mark as unread' : 'Mark as read'}
+                >
+                  <Check size={13} />
+                </button>
+                <button
+                  onClick={(e) => onDeleteNotification(notification._id, e)}
+                  className="p-1 rounded text-gray-400 hover:text-red-400 hover:bg-white/10 transition-colors"
+                  title="Delete"
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
+
               {!notification.isRead && (
-                <div className="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0 self-center shadow-[0_0_8px_rgba(99,102,241,0.9)]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0 self-center shadow-[0_0_8px_rgba(99,102,241,0.9)] group-hover:opacity-0 transition-opacity" />
               )}
             </div>
           ))
@@ -205,7 +227,7 @@ const NotificationDropdown = ({
                 title="Clear all notifications"
               >
                 <Trash2 size={13} />
-                <span>Clear</span>
+                <span>Clear all</span>
               </button>
             )}
           </div>

@@ -7,9 +7,6 @@ import { getAllEvents } from '../api/events';
 import { getClubs } from '../api/clubs';
 import { getAIRecommendations } from '../api/ai';
 import Loader from '../components/Loader';
-import AnalyticsStatsCard from '../components/analytics/StatsCard';
-import LineChart from '../components/analytics/LineChart';
-import PieChart from '../components/analytics/PieChart';
 import { useAuth } from '../context/AuthContext';
 import { getFormattedUserName } from '../utils/userUtils';
 
@@ -103,22 +100,6 @@ const Dashboard = () => {
           ) : (
             <p className="text-gray-400 col-span-full">No events to display yet.</p>
           )}
-        </div>
-      </div>
-      
-      {/* Analytics Dashboard */}
-      <div className="mt-12 sm:mt-16">
-        <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 tracking-tight">Analytics Overview</h2>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
-          <AnalyticsStatsCard title="Total Users" value="1,245" icon={Users} delay={0.1} />
-          <AnalyticsStatsCard title="Total Events" value={stats.events} icon={Calendar} delay={0.2} />
-          <AnalyticsStatsCard title="Total Bookings" value="3,892" icon={TrendingUp} delay={0.3} />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <LineChart />
-          <PieChart />
         </div>
       </div>
     </div>

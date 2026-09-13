@@ -12,7 +12,7 @@ const DEFAULT_NOTIFICATIONS = [
     type: 'event',
     title: 'Upcoming Tech Hackathon 2026',
     message: 'Registration is now open for the annual CodeFest Hackathon! Huge prizes await.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
     isRead: false,
   },
   {
@@ -20,7 +20,7 @@ const DEFAULT_NOTIFICATIONS = [
     type: 'booking',
     title: 'Booking Confirmed!',
     message: 'Your seat for "AI & Future Web Dev Workshop" has been successfully reserved.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     isRead: false,
   },
   {
@@ -113,6 +113,32 @@ const NotificationBell = () => {
     });
   };
 
+  const handleToggleRead = async (id, e) => {
+    if (e) e.stopPropagation();
+    try {
+      await markAsRead(id);
+    } catch {
+      // Ignore
+    }
+    setNotifications(prev => {
+      const updated = prev.map(n => n._id === id ? { ...n, isRead: !n.isRead } : n);
+      localStorage.setItem('eventopia_notifications', JSON.stringify(updated));
+      setUnreadCount(updated.filter(n => !n.isRead).length);
+      return updated;
+    });
+  };
+
+  const handleDeleteNotification = (id, e) => {
+    if (e) e.stopPropagation();
+    setNotifications(prev => {
+      const updated = prev.filter(n => n._id !== id);
+      localStorage.setItem('eventopia_notifications', JSON.stringify(updated));
+      setUnreadCount(updated.filter(n => !n.isRead).length);
+      return updated;
+    });
+    toast.success("Notification removed");
+  };
+
   const handleMarkAllAsRead = async () => {
     try {
       await markAsRead(); 
@@ -125,7 +151,7 @@ const NotificationBell = () => {
       setUnreadCount(0);
       return updated;
     });
-    toast.success("All caught up!");
+    toast.success("All notifications marked as read!");
   };
 
   const handleClearAll = () => {
@@ -139,18 +165,19 @@ const NotificationBell = () => {
     <div className="relative z-50 flex items-center" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-          isOpen ? 'bg-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.3)] border border-indigo-500/30' : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
-        } hover:scale-105 group relative`}
+        className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+          isOpen 
+            ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/40 shadow-[0_0_20px_rgba(99,102,241,0.35)] scale-105' 
+            : 'bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border border-white/10'
+        } transition-transform active:scale-95 group`}
         title="Notifications"
       >
-        <Bell size={18} />
+        <Bell size={18} className={unreadCount > 0 ? 'group-hover:rotate-12 transition-transform' : ''} />
         
-        {/* Unread Badge with Pulse Ring */}
+        {/* Unread Count Badge */}
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-[#030712]"></span>
+          <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[10px] font-extrabold px-1.5 py-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center border-2 border-[#030712] shadow-lg animate-pulse">
+            {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
@@ -160,6 +187,8 @@ const NotificationBell = () => {
           <NotificationDropdown 
             notifications={notifications}
             onMarkAsRead={handleMarkAsRead}
+            onToggleRead={handleToggleRead}
+            onDeleteNotification={handleDeleteNotification}
             onMarkAllAsRead={handleMarkAllAsRead}
             onClearAll={handleClearAll}
             onClose={() => setIsOpen(false)}
