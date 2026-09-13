@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/v1";
+const API_URL = "https://eventopia-backend-1tzq.onrender.com/api/v1";
 
 export const getAIRecommendations = () => {
   const token = localStorage.getItem("token");
