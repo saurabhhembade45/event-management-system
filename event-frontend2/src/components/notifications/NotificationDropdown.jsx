@@ -18,7 +18,7 @@ const NotificationDropdown = ({ notifications, onMarkAsRead, onMarkAllAsRead, on
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -5, scale: 0.98 }}
       transition={{ duration: 0.15 }}
-      className="absolute right-0 top-14 w-[420px] glass-card rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50 flex flex-col"
+      className="fixed sm:absolute right-3 sm:right-0 left-3 sm:left-auto top-16 sm:top-14 w-[calc(100vw-1.5rem)] sm:w-[420px] max-w-[420px] glass-card rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50 flex flex-col"
     >
       <div className="max-h-[28rem] overflow-y-auto custom-scrollbar">
         {notifications.length > 0 ? (

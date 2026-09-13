@@ -50,16 +50,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
               }}
             >
               {/* Header */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '20px 24px 16px',
-                  borderBottom: '1px solid rgba(255,255,255,0.06)',
-                  flexShrink: 0,
-                }}
-              >
+              <div className="flex justify-between items-center p-4 sm:px-6 sm:py-5 border-b border-white/[0.06] shrink-0">
                 <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#f1f5f9', margin: 0 }}>
                   {title}
                 </h2>
@@ -81,13 +72,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
               </div>
 
               {/* Scrollable body */}
-              <div
-                style={{
-                  overflowY: 'auto',
-                  padding: '20px 24px 24px',
-                }}
-                className="custom-scrollbar"
-              >
+              <div className="overflow-y-auto p-4 sm:p-6 custom-scrollbar">
                 {children}
               </div>
             </div>

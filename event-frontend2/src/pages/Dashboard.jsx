@@ -52,7 +52,7 @@ const Dashboard = () => {
         <p className="text-gray-400">Here's what's happening in Eventopia today.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard title="Total Events" value={stats.events} icon={Calendar} trend={12} />
         <StatCard title="Active Clubs" value={stats.clubs} icon={Users} trend={5} />
         <StatCard title="Total Bookings" value="---" icon={TrendingUp} />
@@ -60,48 +60,48 @@ const Dashboard = () => {
       </div>
 
       {/* AI Recommended Events */}
-      <div className="mt-12">
+      <div className="mt-10 sm:mt-12">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white">
+          <h2 className="text-xl sm:text-2xl font-bold text-white">
             AI Recommended Events For You
           </h2>
-          <p className="text-gray-400 mt-1">
+          <p className="text-gray-400 text-xs sm:text-sm mt-1">
             Based on your interests and previous participation
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {aiRecommendations.length > 0 ? (
             aiRecommendations.map(event => (
               <EventCard key={event._id} event={event} />
             ))
           ) : (
-            <p className="text-gray-400 col-span-3">
+            <p className="text-gray-400 col-span-full">
               No recommendations available yet.
             </p>
           )}
         </div>
       </div>
 
-      <div className="mt-12">
+      <div className="mt-10 sm:mt-12">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">Upcoming Events</h2>
-          <button className="text-indigo-400 hover:text-indigo-300 font-medium">View All</button>
+          <h2 className="text-xl sm:text-2xl font-bold text-white">Upcoming Events</h2>
+          <button className="text-indigo-400 hover:text-indigo-300 font-medium text-xs sm:text-sm">View All</button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {recentEvents.length > 0 ? (
             recentEvents.map(event => <EventCard key={event._id} event={event} />)
           ) : (
-            <p className="text-gray-400 col-span-3">No events to display yet.</p>
+            <p className="text-gray-400 col-span-full">No events to display yet.</p>
           )}
         </div>
       </div>
       
       {/* Analytics Dashboard */}
-      <div className="mt-16">
-        <h2 className="text-2xl font-bold text-white mb-6 tracking-tight">Analytics Overview</h2>
+      <div className="mt-12 sm:mt-16">
+        <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 tracking-tight">Analytics Overview</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
           <AnalyticsStatsCard title="Total Users" value="1,245" icon={Users} delay={0.1} />
           <AnalyticsStatsCard title="Total Events" value={stats.events} icon={Calendar} delay={0.2} />
           <AnalyticsStatsCard title="Total Bookings" value="3,892" icon={TrendingUp} delay={0.3} />

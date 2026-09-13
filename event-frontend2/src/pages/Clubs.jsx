@@ -85,7 +85,7 @@ const Clubs = () => {
       {loading ? (
         <Loader />
       ) : clubs.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {clubs.map((club) => (
             <ClubCard key={club._id} club={club} onDelete={isAdmin ? handleDeleteClub : null} />
           ))}

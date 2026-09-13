@@ -170,7 +170,7 @@ const EventDetails = () => {
       </button>
 
       <div className="glass-card overflow-hidden">
-        <div className="h-64 sm:h-96 relative bg-gray-800">
+        <div className="h-48 sm:h-72 md:h-96 relative bg-gray-800">
           {event.image ? (
             <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
           ) : (
@@ -180,7 +180,7 @@ const EventDetails = () => {
           )}
         </div>
         
-        <div className="p-8">
+        <div className="p-4 sm:p-6 md:p-8">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">{event.title}</h1>

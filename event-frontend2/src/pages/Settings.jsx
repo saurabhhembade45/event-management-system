@@ -14,7 +14,7 @@ const Settings = () => {
         <p className="text-gray-400 mb-8">Manage your profile and account preferences.</p>
       </div>
 
-      <div className="glass-card p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+      <div className="glass-card p-4 sm:p-8 flex flex-col md:flex-row items-center gap-4 sm:gap-8 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-premium opacity-20"></div>
 
         <div className="w-32 h-32 rounded-full bg-gradient-premium p-1 z-10 shadow-lg">

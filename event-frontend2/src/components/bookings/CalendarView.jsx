@@ -85,7 +85,7 @@ const CalendarView = ({ events }) => {
             key={day}
             onClick={() => onDateClick(cloneDay)}
             className={`
-              relative p-2 h-14 border border-white/[0.02] flex flex-col items-center justify-center cursor-pointer transition-all duration-200
+              relative p-1 sm:p-2 h-10 sm:h-14 border border-white/[0.02] flex flex-col items-center justify-center cursor-pointer transition-all duration-200
               ${!isSameMonth(day, monthStart) ? 'text-gray-600 bg-white/[0.01]' : 'text-gray-300 bg-white/[0.03] hover:bg-indigo-500/10'}
               ${isSameDay(day, selectedDate) ? 'bg-indigo-500/20 border-indigo-500/50 text-white font-bold' : ''}
               ${isSameDay(day, new Date()) && !isSameDay(day, selectedDate) ? 'border-b-2 border-b-indigo-500' : ''}
