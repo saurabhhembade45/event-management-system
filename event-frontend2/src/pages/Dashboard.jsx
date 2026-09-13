@@ -14,7 +14,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const displayName = user?.username?.split(' ')[0] || user?.email?.split('@')[0] || user?.name || 'User';
+  const displayName = user?.username || user?.name || 'User';
 
   const [stats, setStats] = useState({ events: 0, clubs: 0 });
   const [recentEvents, setRecentEvents] = useState([]);
@@ -52,9 +52,9 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       <div>
-        {/* Mobile & Tab only: Welcome user_name */}
-        <p className="block md:hidden text-lg font-semibold text-gray-200 mb-1">
-          Welcome <span className="text-transparent bg-clip-text bg-gradient-premium">{displayName}</span>
+        {/* Mobile & Tab only: Welcome user_name (decreased size) */}
+        <p className="block md:hidden text-xs sm:text-sm font-medium text-gray-300 mb-1">
+          Welcome <span className="text-transparent bg-clip-text bg-gradient-premium font-semibold">{displayName}</span>
         </p>
         <h1 className="text-3xl font-bold text-white mb-2">Dashboard Overview</h1>
         <p className="text-gray-400">Here's what's happening in Eventopia today.</p>
