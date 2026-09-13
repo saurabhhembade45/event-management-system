@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { loginUser, registerUser, getDashboard } from '../api/auth';
+import { jwtDecode } from 'jwt-decode';
 
 export const AuthContext = createContext();
 
@@ -9,7 +10,20 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     try {
       const stored = localStorage.getItem('user');
-      return stored ? JSON.parse(stored) : null;
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && (parsed.username || parsed.name || parsed.email)) return parsed;
+      }
+      const token = localStorage.getItem('token');
+      if (token) {
+        const decoded = jwtDecode(token);
+        return {
+          username: decoded.username || decoded.name || decoded.email?.split('@')[0],
+          email: decoded.email,
+          role: decoded.role,
+        };
+      }
+      return null;
     } catch {
       return null;
     }

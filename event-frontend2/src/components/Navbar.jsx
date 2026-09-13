@@ -15,7 +15,7 @@ const Navbar = ({ onMenuToggle }) => {
     }
   };
 
-  const displayName = user?.username || user?.name || 'User';
+  const displayName = user?.username || user?.name || (user?.email ? user.email.split('@')[0] : '') || 'User';
   const avatarLetter = displayName.charAt(0).toUpperCase();
 
   return (
