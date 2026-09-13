@@ -174,9 +174,9 @@ const NotificationBell = () => {
       >
         <Bell size={18} />
         
-        {/* Unread Count Badge (Static / Silent) */}
+        {/* Unread Count Badge (Solid Single Color) */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[10px] font-extrabold px-1.5 py-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center border-2 border-[#030712] shadow-md">
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-extrabold px-1.5 py-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center border-2 border-[#030712] shadow-md">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
