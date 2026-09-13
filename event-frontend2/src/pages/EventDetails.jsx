@@ -79,6 +79,21 @@ const EventDetails = () => {
     setPaymentForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
   const processPayment = async (e) => {
     e.preventDefault();
     if (!paymentForm.name || !paymentForm.email || !paymentForm.phone) {
@@ -86,27 +101,34 @@ const EventDetails = () => {
     }
 
     setProcessing(true);
-    let order_id = null;
 
     try {
-      // Step 1: Create Order if it's a paid event. If free it skips Razorpay.
-      // Wait, backend might handle free? Let's check backend or just always send to Razorpay.
-      // 0 amount means Razorpay might fail, let's just send to Razorpay and backend decides.
+      // Ensure Razorpay SDK is loaded on mobile/web
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        setProcessing(false);
+        return toast.error("Failed to load Razorpay SDK. Please check your internet connection.");
+      }
+
+      // Step 1: Create Order
       const orderRes = await createOrder({ eventId: id });
       
-      if (!orderRes.data.success) {
+      if (!orderRes.data.success || !orderRes.data.order) {
         throw new Error("Order creation failed");
       }
 
-      order_id = orderRes.data.order.id;
+      const orderData = orderRes.data.order;
+
+      // Hide the details modal before launching Razorpay to prevent GPU/backdrop conflicts on mobile
+      setShowPaymentModal(false);
 
       const options = {
         key: "rzp_test_RL6e1Ke8DvBIBO",
-        amount: orderRes.data.order.amount,
-        currency: "INR",
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
         name: "Eventopia",
         description: `Booking for ${event.title}`,
-        order_id: order_id,
+        order_id: orderData.id,
         handler: async function (response) {
           try {
             const verifyRes = await verifyPayment({
@@ -119,7 +141,6 @@ const EventDetails = () => {
             
             if (verifyRes.data.success) {
               toast.success("Payment successful!");
-              setShowPaymentModal(false);
               navigate('/receipt', { 
                 state: { 
                   event, 
@@ -127,9 +148,21 @@ const EventDetails = () => {
                   paymentId: response.razorpay_payment_id 
                 }
               });
+            } else {
+              toast.error(verifyRes.data.message || "Payment verification failed");
+              setShowPaymentModal(true);
             }
           } catch (err) {
             toast.error("Payment verification failed");
+            setShowPaymentModal(true);
+          } finally {
+            setProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setProcessing(false);
+            setShowPaymentModal(true);
           }
         },
         prefill: {
@@ -144,12 +177,13 @@ const EventDetails = () => {
 
       const rzp = new window.Razorpay(options);
       rzp.on('payment.failed', function (response){
-        toast.error("Payment Failed");
+        toast.error("Payment Failed: " + (response.error?.description || ""));
+        setProcessing(false);
+        setShowPaymentModal(true);
       });
       rzp.open();
     } catch (error) {
-      toast.error(error.message || "Something went wrong during payment initialization");
-    } finally {
+      toast.error(error.response?.data?.message || error.message || "Something went wrong during payment initialization");
       setProcessing(false);
     }
   };
@@ -230,7 +264,7 @@ const EventDetails = () => {
       </div>
 
       {showPaymentModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80">
           <div className="bg-gray-900 border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div className="p-6">
               <h2 className="text-2xl font-bold text-white mb-2">Participant Details</h2>
