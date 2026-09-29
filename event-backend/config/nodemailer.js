@@ -1,20 +1,45 @@
 const nodemailer = require("nodemailer");
 
-const createTransporter = () => {
-    return nodemailer.createTransport({
-        host: process.env.MAIL_HOST || "smtp.gmail.com",
-        port: process.env.MAIL_PORT ? parseInt(process.env.MAIL_PORT) : 587,
-        secure: process.env.MAIL_PORT === "465",
-        auth: {
-            user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASS,
-        },
-    });
+let transporter = null;
+
+const getTransporter = () => {
+    if (!transporter) {
+        const mailHost = process.env.MAIL_HOST || "smtp.gmail.com";
+        const isGmail = mailHost.includes("gmail");
+
+        transporter = nodemailer.createTransport({
+            ...(isGmail
+                ? { service: "gmail" }
+                : {
+                    host: mailHost,
+                    port: process.env.MAIL_PORT ? parseInt(process.env.MAIL_PORT) : 587,
+                    secure: process.env.MAIL_PORT === "465",
+                }),
+            auth: {
+                user: process.env.MAIL_USER ? process.env.MAIL_USER.trim() : "",
+                pass: process.env.MAIL_PASS ? process.env.MAIL_PASS.replace(/^"|"$/g, '').trim() : "",
+            },
+            pool: true,
+            maxConnections: 5,
+            maxMessages: 100,
+            connectionTimeout: 10000,
+        });
+    }
+    return transporter;
 };
 
 const sendOTPEmail = async (email, otp) => {
+    const mailUser = process.env.MAIL_USER ? process.env.MAIL_USER.trim() : "";
+    const mailPass = process.env.MAIL_PASS ? process.env.MAIL_PASS.replace(/^"|"$/g, '').trim() : "";
+
+    if (!mailUser || !mailPass || mailPass.includes("your-app-password")) {
+        console.warn(`\n⚠️  [NODEMAILER NOTICE] Email sending skipped. Real credentials missing in backend .env.`);
+        console.warn(`👉 To send real emails to inbox, add your Gmail App Password to event-backend/.env: MAIL_PASS="xxxx xxxx xxxx xxxx"\n`);
+        return false;
+    }
+
     try {
-        const transporter = createTransporter();
+        const mailer = getTransporter();
 
         const htmlContent = `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 500px; margin: 0 auto; padding: 24px; background: #0f172a; border-radius: 16px; border: 1px solid #334155; color: #f8fafc;">
@@ -34,18 +59,18 @@ const sendOTPEmail = async (email, otp) => {
         `;
 
         const mailOptions = {
-            from: `"Eventopia" <${process.env.MAIL_USER || "noreply@eventopia.com"}>`,
+            from: `"Eventopia" <${mailUser}>`,
             to: email,
             subject: "Your Eventopia Email Verification Code",
             html: htmlContent,
         };
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log("OTP Email sent successfully:", info.messageId);
+        const info = await mailer.sendMail(mailOptions);
+        console.log(`✅ [NODEMAILER SUCCESS] OTP Email sent to ${email} (MessageID: ${info.messageId})`);
         return info;
     } catch (error) {
-        console.error("Error sending OTP email:", error.message);
-        throw new Error("Failed to send verification email. Please check email credentials.");
+        console.error(`❌ [NODEMAILER ERROR] Failed sending email to ${email}:`, error.message);
+        return false;
     }
 };
 

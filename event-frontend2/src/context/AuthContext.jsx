@@ -132,8 +132,12 @@ export const AuthProvider = ({ children }) => {
         return { success: true };
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to resend OTP');
-      return { success: false, retryAfterSeconds: error.response?.data?.retryAfterSeconds };
+      const msg = error.response?.data?.message || 'Failed to resend OTP';
+      toast.error(msg);
+      return { 
+        success: false, 
+        retryAfterSeconds: error.response?.data?.retryAfterSeconds 
+      };
     }
   };
 

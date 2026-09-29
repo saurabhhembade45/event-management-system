@@ -9,6 +9,18 @@ const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+// Helper function to trigger non-blocking email sending and console logging
+const dispatchOTP = (email, rawOtp) => {
+    console.log(`\n==========================================`);
+    console.log(`🔑 [OTP DEBUG LOG] Verification code for ${email}: ${rawOtp}`);
+    console.log(`==========================================\n`);
+
+    // Non-blocking async call so HTTP response completes in milliseconds
+    sendOTPEmail(email, rawOtp).catch((err) => {
+        console.error("Async email dispatch error:", err.message);
+    });
+};
+
 exports.register = async (req, res) => {
     try { 
         const { username, email, password, college } = req.body;  
@@ -20,97 +32,51 @@ exports.register = async (req, res) => {
             });
         }
 
+        // Check if user already exists in User collection
         const existingUser = await User.findOne({ email }); 
-        
         if (existingUser) {
-            if (existingUser.isEmailVerified) {
-                return res.status(400).json({
-                    success: false,
-                    message: "User already exists for this mail",
-                }); 
-            } else {
-                // Unverified existing user: update credentials and send a fresh OTP
-                const hashedPass = await bcrypt.hash(password, 10);
-                existingUser.username = username;
-                existingUser.password = hashedPass;
-                existingUser.college = college;
-                await existingUser.save();
-
-                const rawOtp = generateOTP();
-                const hashedOtp = await bcrypt.hash(rawOtp, 10);
-
-                await OTP.findOneAndUpdate(
-                    { email },
-                    { 
-                        otp: hashedOtp, 
-                        createdAt: new Date(), 
-                        lastSentAt: new Date() 
-                    },
-                    { upsert: true, new: true }
-                );
-
-                try {
-                    await sendOTPEmail(email, rawOtp);
-                } catch (mailErr) {
-                    console.error("Failed sending OTP email during re-registration:", mailErr.message);
-                }
-
-                const userObj = existingUser.toObject();
-                delete userObj.password;
-
-                return res.status(200).json({
-                    success: true,
-                    message: "User registration updated. Please verify your email using the 6-digit OTP sent.",
-                    user: userObj,
-                    requiresVerification: true,
-                });
-            }
+            return res.status(400).json({
+                success: false,
+                message: "User already registered with this email. Please log in.",
+            }); 
         }
 
         const hashedPass = await bcrypt.hash(password, 10); 
         const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
-        let role = "Student";   // default
+        let role = "Student"; // default
         if (ADMIN_EMAIL && email === ADMIN_EMAIL) {
             role = "Admin";
         }
-
-        // Create User with isEmailVerified: false
-        const user = await User.create({
-            username, 
-            email, 
-            password: hashedPass, 
-            role, 
-            college,
-            isEmailVerified: false
-        }); 
 
         // Generate 6-digit OTP
         const rawOtp = generateOTP();
         const hashedOtp = await bcrypt.hash(rawOtp, 10);
 
-        // Store OTP in MongoDB (expires in 5 minutes)
-        await OTP.create({
-            email,
-            otp: hashedOtp,
-            createdAt: new Date(),
-            lastSentAt: new Date()
-        });
+        // Store PENDING user registration details + OTP in MongoDB (expires in 5 minutes)
+        // User entry in main User collection is ONLY created after OTP is successfully verified!
+        await OTP.findOneAndUpdate(
+            { email },
+            {
+                email,
+                otp: hashedOtp,
+                username,
+                password: hashedPass,
+                college,
+                role,
+                createdAt: new Date(),
+                lastSentAt: new Date()
+            },
+            { upsert: true, new: true }
+        );
 
-        // Send OTP email via Nodemailer
-        try {
-            await sendOTPEmail(email, rawOtp);
-        } catch (mailErr) {
-            console.error("Failed sending OTP email during registration:", mailErr.message);
-        }
+        // Non-blocking dispatch
+        dispatchOTP(email, rawOtp);
 
-        const userObj = user.toObject();
-        delete userObj.password;
-
-        return res.status(201).json({
+        return res.status(200).json({
             success: true, 
-            message: "User Registered Successfully. Please verify your email using the 6-digit OTP sent.",
-            user: userObj,
+            message: "OTP sent to your email. Please verify to complete account registration.",
+            email,
             requiresVerification: true,
         });
     }
@@ -134,27 +100,21 @@ exports.verifyOTP = async (req, res) => {
             });
         }
 
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found",
-            });
-        }
-
-        if (user.isEmailVerified) {
+        // Check if user is already registered in User collection
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
             return res.status(400).json({
                 success: false,
-                message: "Email is already verified",
+                message: "Email is already registered and verified. Please log in.",
             });
         }
 
-        // Find OTP record in MongoDB
+        // Find pending registration record in OTP collection
         const otpRecord = await OTP.findOne({ email });
         if (!otpRecord) {
             return res.status(400).json({
                 success: false,
-                message: "OTP has expired or is invalid. Please request a new OTP.",
+                message: "OTP has expired or registration session lost. Please sign up again.",
             });
         }
 
@@ -167,18 +127,25 @@ exports.verifyOTP = async (req, res) => {
             });
         }
 
-        // Update user to verified & delete OTP record
-        user.isEmailVerified = true;
-        await user.save();
+        // NOW create the permanent User document in User collection after OTP validation
+        const user = await User.create({
+            username: otpRecord.username,
+            email: otpRecord.email,
+            password: otpRecord.password,
+            college: otpRecord.college,
+            role: otpRecord.role || "Student",
+            isEmailVerified: true
+        });
 
+        // Delete pending OTP record
         await OTP.deleteOne({ _id: otpRecord._id });
 
         const userObj = user.toObject();
         delete userObj.password;
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
-            message: "Email verified successfully. You can now log in.",
+            message: "Email verified & account created successfully! You can now log in.",
             user: userObj,
         });
     } catch (error) {
@@ -201,25 +168,27 @@ exports.resendOTP = async (req, res) => {
             });
         }
 
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({
+        // Check if user is already registered in User collection
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
                 success: false,
-                message: "User not found for this email",
+                message: "Account already exists for this email. Please log in.",
             });
         }
 
-        if (user.isEmailVerified) {
-            return res.status(400).json({
+        // Find pending registration record in OTP collection
+        const pendingOTP = await OTP.findOne({ email });
+        if (!pendingOTP) {
+            return res.status(404).json({
                 success: false,
-                message: "Email is already verified",
+                message: "No pending registration found for this email. Please sign up again.",
             });
         }
 
         // Rate limiting check (60 seconds cooldown)
-        const existingOTP = await OTP.findOne({ email });
-        if (existingOTP && existingOTP.lastSentAt) {
-            const timeDiffSeconds = (new Date() - new Date(existingOTP.lastSentAt)) / 1000;
+        if (pendingOTP.lastSentAt) {
+            const timeDiffSeconds = (new Date() - new Date(pendingOTP.lastSentAt)) / 1000;
             const cooldown = 60; // 60s cooldown
             if (timeDiffSeconds < cooldown) {
                 const remaining = Math.ceil(cooldown - timeDiffSeconds);
@@ -235,23 +204,14 @@ exports.resendOTP = async (req, res) => {
         const rawOtp = generateOTP();
         const hashedOtp = await bcrypt.hash(rawOtp, 10);
 
-        // Upsert OTP document in MongoDB
-        await OTP.findOneAndUpdate(
-            { email },
-            {
-                otp: hashedOtp,
-                createdAt: new Date(),
-                lastSentAt: new Date()
-            },
-            { upsert: true, new: true }
-        );
+        // Update OTP record
+        pendingOTP.otp = hashedOtp;
+        pendingOTP.createdAt = new Date();
+        pendingOTP.lastSentAt = new Date();
+        await pendingOTP.save();
 
-        // Send OTP email via Nodemailer
-        try {
-            await sendOTPEmail(email, rawOtp);
-        } catch (mailErr) {
-            console.error("Failed sending resent OTP email:", mailErr.message);
-        }
+        // Non-blocking dispatch
+        dispatchOTP(email, rawOtp);
 
         return res.status(200).json({
             success: true,
@@ -281,7 +241,7 @@ exports.login = async (req, res) => {
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: "User not registred",
+                message: "User not registered",
             });
         }
 

@@ -12,6 +12,19 @@ const otpSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    username: {
+        type: String
+    },
+    password: {
+        type: String
+    },
+    college: {
+        type: String
+    },
+    role: {
+        type: String,
+        default: "Student"
+    },
     createdAt: {
         type: Date,
         default: Date.now,
