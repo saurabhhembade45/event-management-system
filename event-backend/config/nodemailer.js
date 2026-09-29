@@ -15,11 +15,14 @@ const sendOTPEmail = async (email, otp) => {
 
     try {
         const transporter = nodemailer.createTransport({
-            service: "gmail",
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false, // TLS via STARTTLS
             auth: {
                 user: mailUser,
                 pass: mailPass,
             },
+            family: 4, // Force IPv4 to bypass Render's IPv6 ENETUNREACH error
             tls: {
                 rejectUnauthorized: false
             }
