@@ -140,13 +140,26 @@ exports.verifyOTP = async (req, res) => {
         // Delete pending OTP record
         await OTP.deleteOne({ _id: otpRecord._id });
 
+        // Generate JWT Token for automatic direct login
+        const payload = {
+            id: user._id,
+            email: user.email,
+            role: user.role,
+            username: user.username,
+            name: user.username,
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: "2h",
+        });
+
         const userObj = user.toObject();
         delete userObj.password;
 
         return res.status(201).json({
             success: true,
-            message: "Email verified & account created successfully! You can now log in.",
+            token,
             user: userObj,
+            message: "Registration & email verification successful! Welcome to Eventopia 🎉",
         });
     } catch (error) {
         console.error("Verify OTP Error:", error);

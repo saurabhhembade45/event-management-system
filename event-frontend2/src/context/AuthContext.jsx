@@ -114,8 +114,16 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await verifyOtpUser(data);
       if (res.data.success) {
-        toast.success(res.data.message || 'Email verified successfully!');
-        navigate('/login');
+        if (res.data.token && res.data.user) {
+          localStorage.setItem('token', res.data.token);
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+          setUser(res.data.user);
+          toast.success(res.data.message || 'Account verified! Welcome to Eventopia 🎉');
+          navigate('/dashboard');
+        } else {
+          toast.success(res.data.message || 'Email verified successfully!');
+          navigate('/login');
+        }
         return true;
       }
     } catch (error) {
