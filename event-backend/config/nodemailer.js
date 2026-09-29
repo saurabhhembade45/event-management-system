@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 const dns = require("dns");
 
-// Force Node to prefer IPv4 DNS resolution to prevent ENETUNREACH errors on cloud hosting (Render)
+// Force Node to prefer IPv4 DNS resolution
 if (dns.setDefaultResultOrder) {
     dns.setDefaultResultOrder("ipv4first");
 }
@@ -9,15 +9,10 @@ if (dns.setDefaultResultOrder) {
 const sendOTPEmail = async (email, otp) => {
     const mailUser = process.env.MAIL_USER ? process.env.MAIL_USER.trim() : "";
     const mailPass = process.env.MAIL_PASS ? process.env.MAIL_PASS.replace(/^"|"$/g, '').trim() : "";
+    const resendApiKey = process.env.RESEND_API_KEY ? process.env.RESEND_API_KEY.trim() : "";
+    const brevoApiKey = process.env.BREVO_API_KEY ? process.env.BREVO_API_KEY.trim() : "";
 
-    console.log(`\n📧 [NODEMAILER ATTEMPT] Sending email to: ${email}`);
-    console.log(`📧 [NODEMAILER CONFIG] MAIL_USER: "${mailUser}", MAIL_PASS provided: ${Boolean(mailPass)}`);
-
-    if (!mailUser || !mailPass) {
-        console.error(`\n❌ [NODEMAILER ERROR] Email NOT sent. MAIL_USER or MAIL_PASS environment variable is missing on server!`);
-        console.error(`👉 Please set MAIL_USER and MAIL_PASS in Render Dashboard Environment Variables.\n`);
-        return false;
-    }
+    console.log(`\n📧 [EMAIL ATTEMPT] Preparing to send OTP code to: ${email}`);
 
     const htmlContent = `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 500px; margin: 0 auto; padding: 24px; background: #0f172a; border-radius: 16px; border: 1px solid #334155; color: #f8fafc;">
@@ -36,75 +31,121 @@ const sendOTPEmail = async (email, otp) => {
     </div>
     `;
 
-    const mailOptions = {
-        from: `"Eventopia" <${mailUser}>`,
-        to: email,
-        subject: "Your Eventopia Email Verification Code",
-        html: htmlContent,
-    };
-
-    // Attempt 1: Port 587 (STARTTLS) - Preferred for Cloud Hosting like Render
-    try {
-        const transporter587 = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false, // STARTTLS
-            requireTLS: true,
-            auth: { user: mailUser, pass: mailPass },
-            family: 4, // Force IPv4
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 10000,
-            tls: { rejectUnauthorized: false }
-        });
-
-        const info = await transporter587.sendMail(mailOptions);
-        console.log(`✅ [NODEMAILER SUCCESS - TLS 587] OTP Email delivered to ${email}! MessageID: ${info.messageId}`);
-        return info;
-    } catch (tlsErr) {
-        console.warn(`⚠️ [NODEMAILER TLS 587 FAILED]: ${tlsErr.message}. Attempting Port 465 SSL fallback...`);
+    // Attempt 1: Resend HTTPS API (Port 443 - Bypasses Render SMTP port blocking)
+    if (resendApiKey) {
+        try {
+            console.log(`🚀 [EMAIL ATTEMPT 1] Sending via Resend HTTPS API (Port 443)...`);
+            const res = await fetch("https://api.resend.com/emails", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${resendApiKey}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    from: "Eventopia <onboarding@resend.dev>",
+                    to: [email],
+                    subject: "Your Eventopia Email Verification Code",
+                    html: htmlContent
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log(`✅ [RESEND SUCCESS] OTP Email delivered to ${email}! ID: ${data.id}`);
+                return data;
+            } else {
+                console.warn(`⚠️ [RESEND API ERROR]: ${JSON.stringify(data)}`);
+            }
+        } catch (err) {
+            console.warn(`⚠️ [RESEND FAILED]: ${err.message}`);
+        }
     }
 
-    // Attempt 2: Direct SSL Port 465 with forced IPv4
-    try {
-        const transporterSSL = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true, // Direct SSL
-            auth: { user: mailUser, pass: mailPass },
-            family: 4, // Force IPv4
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 10000,
-            tls: { rejectUnauthorized: false }
-        });
-
-        const info = await transporterSSL.sendMail(mailOptions);
-        console.log(`✅ [NODEMAILER SUCCESS - SSL 465] OTP Email delivered to ${email}! MessageID: ${info.messageId}`);
-        return info;
-    } catch (sslErr) {
-        console.warn(`⚠️ [NODEMAILER SSL 465 FAILED]: ${sslErr.message}. Attempting Gmail Service transport fallback...`);
+    // Attempt 2: Brevo (Sendinblue) HTTPS API (Port 443 - Bypasses Render SMTP port blocking)
+    if (brevoApiKey) {
+        try {
+            console.log(`🚀 [EMAIL ATTEMPT 2] Sending via Brevo HTTPS API (Port 443)...`);
+            const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+                method: "POST",
+                headers: {
+                    "api-key": brevoApiKey,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    sender: { name: "Eventopia", email: mailUser || "noreply@eventopia.com" },
+                    to: [{ email: email }],
+                    subject: "Your Eventopia Email Verification Code",
+                    htmlContent: htmlContent
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log(`✅ [BREVO SUCCESS] OTP Email delivered to ${email}! MessageID: ${data.messageId}`);
+                return data;
+            } else {
+                console.warn(`⚠️ [BREVO API ERROR]: ${JSON.stringify(data)}`);
+            }
+        } catch (err) {
+            console.warn(`⚠️ [BREVO FAILED]: ${err.message}`);
+        }
     }
 
-    // Attempt 3: Gmail Service Transport Fallback with forced IPv4
-    try {
-        const transporterGmail = nodemailer.createTransport({
-            service: "gmail",
-            auth: { user: mailUser, pass: mailPass },
-            family: 4, // Force IPv4
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 10000,
-            tls: { rejectUnauthorized: false }
-        });
+    // Attempt 3: Direct SMTP (Port 587 / 465) - Works on local environment or unblocked servers
+    if (mailUser && mailPass) {
+        const mailOptions = {
+            from: `"Eventopia" <${mailUser}>`,
+            to: email,
+            subject: "Your Eventopia Email Verification Code",
+            html: htmlContent,
+        };
 
-        const info = await transporterGmail.sendMail(mailOptions);
-        console.log(`✅ [NODEMAILER SUCCESS - GMAIL SERVICE] OTP Email delivered to ${email}! MessageID: ${info.messageId}`);
-        return info;
-    } catch (gmailErr) {
-        console.error(`❌ [NODEMAILER CRITICAL ERROR] All SMTP attempts failed: ${gmailErr.message}`);
-        return false;
+        // Try Port 587 TLS
+        try {
+            const transporter587 = nodemailer.createTransport({
+                host: "smtp.gmail.com",
+                port: 587,
+                secure: false,
+                requireTLS: true,
+                auth: { user: mailUser, pass: mailPass },
+                family: 4,
+                connectionTimeout: 6000,
+                greetingTimeout: 6000,
+                socketTimeout: 6000,
+                tls: { rejectUnauthorized: false }
+            });
+
+            const info = await transporter587.sendMail(mailOptions);
+            console.log(`✅ [NODEMAILER SUCCESS - TLS 587] OTP Email delivered to ${email}! MessageID: ${info.messageId}`);
+            return info;
+        } catch (tlsErr) {
+            console.warn(`⚠️ [NODEMAILER TLS 587 FAILED]: ${tlsErr.message}`);
+        }
+
+        // Try Port 465 SSL
+        try {
+            const transporterSSL = nodemailer.createTransport({
+                host: "smtp.gmail.com",
+                port: 465,
+                secure: true,
+                auth: { user: mailUser, pass: mailPass },
+                family: 4,
+                connectionTimeout: 6000,
+                greetingTimeout: 6000,
+                socketTimeout: 6000,
+                tls: { rejectUnauthorized: false }
+            });
+
+            const info = await transporterSSL.sendMail(mailOptions);
+            console.log(`✅ [NODEMAILER SUCCESS - SSL 465] OTP Email delivered to ${email}! MessageID: ${info.messageId}`);
+            return info;
+        } catch (sslErr) {
+            console.warn(`⚠️ [NODEMAILER SSL 465 FAILED]: ${sslErr.message}`);
+        }
     }
+
+    console.error(`\n❌ [EMAIL CRITICAL ERROR] All email attempts failed!`);
+    console.error(`👉 NOTE: Render free tier blocks outbound SMTP ports 25, 465, and 587 by default.`);
+    console.error(`👉 Solution: Set 'RESEND_API_KEY' or 'BREVO_API_KEY' in Render Environment Variables to send emails over Port 443 (HTTPS)!\n`);
+    return false;
 };
 
 module.exports = { sendOTPEmail };
