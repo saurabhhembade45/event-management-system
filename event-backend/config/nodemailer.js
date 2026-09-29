@@ -1,4 +1,10 @@
 const nodemailer = require("nodemailer");
+const dns = require("dns");
+
+// Force Node to prefer IPv4 DNS resolution to prevent ENETUNREACH errors on cloud hosting (Render)
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder("ipv4first");
+}
 
 const sendOTPEmail = async (email, otp) => {
     const mailUser = process.env.MAIL_USER ? process.env.MAIL_USER.trim() : "";
@@ -37,17 +43,39 @@ const sendOTPEmail = async (email, otp) => {
         html: htmlContent,
     };
 
-    // Attempt 1: Direct SSL Port 465 with IPv4
+    // Attempt 1: Port 587 (STARTTLS) - Preferred for Cloud Hosting like Render
+    try {
+        const transporter587 = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false, // STARTTLS
+            requireTLS: true,
+            auth: { user: mailUser, pass: mailPass },
+            family: 4, // Force IPv4
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 10000,
+            tls: { rejectUnauthorized: false }
+        });
+
+        const info = await transporter587.sendMail(mailOptions);
+        console.log(`✅ [NODEMAILER SUCCESS - TLS 587] OTP Email delivered to ${email}! MessageID: ${info.messageId}`);
+        return info;
+    } catch (tlsErr) {
+        console.warn(`⚠️ [NODEMAILER TLS 587 FAILED]: ${tlsErr.message}. Attempting Port 465 SSL fallback...`);
+    }
+
+    // Attempt 2: Direct SSL Port 465 with forced IPv4
     try {
         const transporterSSL = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,
             secure: true, // Direct SSL
             auth: { user: mailUser, pass: mailPass },
-            family: 4,
-            connectionTimeout: 8000,
-            greetingTimeout: 8000,
-            socketTimeout: 8000,
+            family: 4, // Force IPv4
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 10000,
             tls: { rejectUnauthorized: false }
         });
 
@@ -58,14 +86,15 @@ const sendOTPEmail = async (email, otp) => {
         console.warn(`⚠️ [NODEMAILER SSL 465 FAILED]: ${sslErr.message}. Attempting Gmail Service transport fallback...`);
     }
 
-    // Attempt 2: Service Transport Fallback
+    // Attempt 3: Gmail Service Transport Fallback with forced IPv4
     try {
         const transporterGmail = nodemailer.createTransport({
             service: "gmail",
             auth: { user: mailUser, pass: mailPass },
-            connectionTimeout: 8000,
-            greetingTimeout: 8000,
-            socketTimeout: 8000,
+            family: 4, // Force IPv4
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 10000,
             tls: { rejectUnauthorized: false }
         });
 
