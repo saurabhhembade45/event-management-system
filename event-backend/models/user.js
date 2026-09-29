@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
             "PCCOE Pune",
             "MIT WPU"
         ]
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: false
     }
 });
 

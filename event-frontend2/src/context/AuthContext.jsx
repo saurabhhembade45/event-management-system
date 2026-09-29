@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { loginUser, registerUser, getDashboard } from '../api/auth';
+import { loginUser, registerUser, verifyOtpUser, resendOtpUser, getDashboard } from '../api/auth';
 
 const parseJwtToken = (token) => {
   try {
@@ -89,7 +89,12 @@ export const AuthProvider = ({ children }) => {
         navigate('/dashboard');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      if (error.response?.status === 403 && error.response?.data?.isEmailVerified === false) {
+        toast.error(error.response?.data?.message || 'Please verify your email');
+        navigate('/verify-otp', { state: { email: error.response?.data?.email || data.email } });
+      } else {
+        toast.error(error.response?.data?.message || 'Login failed');
+      }
     }
   };
 
@@ -97,11 +102,38 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await registerUser(data);
       if (res.data.success) {
-        toast.success(res.data.message || 'Registered successfully');
-        navigate('/login');
+        toast.success(res.data.message || 'OTP sent to your email');
+        navigate('/verify-otp', { state: { email: data.email } });
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Registration failed');
+    }
+  };
+
+  const verifyOtp = async (data) => {
+    try {
+      const res = await verifyOtpUser(data);
+      if (res.data.success) {
+        toast.success(res.data.message || 'Email verified successfully!');
+        navigate('/login');
+        return true;
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Verification failed');
+      return false;
+    }
+  };
+
+  const resendOtp = async (data) => {
+    try {
+      const res = await resendOtpUser(data);
+      if (res.data.success) {
+        toast.success(res.data.message || 'New OTP sent!');
+        return { success: true };
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to resend OTP');
+      return { success: false, retryAfterSeconds: error.response?.data?.retryAfterSeconds };
     }
   };
 
@@ -114,7 +146,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, verifyOtp, resendOtp, logout }}>
       {children}
     </AuthContext.Provider>
   );
