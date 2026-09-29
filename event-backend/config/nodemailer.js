@@ -4,9 +4,12 @@ const sendOTPEmail = async (email, otp) => {
     const mailUser = process.env.MAIL_USER ? process.env.MAIL_USER.trim() : "";
     const mailPass = process.env.MAIL_PASS ? process.env.MAIL_PASS.replace(/^"|"$/g, '').trim() : "";
 
+    console.log(`\n📧 [NODEMAILER ATTEMPT] Sending email to: ${email}`);
+    console.log(`📧 [NODEMAILER CONFIG] MAIL_USER: "${mailUser}", MAIL_PASS provided: ${Boolean(mailPass)}`);
+
     if (!mailUser || !mailPass) {
-        console.warn(`\n⚠️  [NODEMAILER NOTICE] Email sending skipped. MAIL_USER or MAIL_PASS in environment variables is empty.`);
-        console.warn(`👉 MAIL_USER: "${mailUser}", MAIL_PASS is empty.\n`);
+        console.error(`\n❌ [NODEMAILER ERROR] Email NOT sent. MAIL_USER or MAIL_PASS environment variable is missing on server!`);
+        console.error(`👉 Please set MAIL_USER and MAIL_PASS in Render Dashboard Environment Variables.\n`);
         return false;
     }
 
@@ -47,10 +50,12 @@ const sendOTPEmail = async (email, otp) => {
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log(`✅ [NODEMAILER SUCCESS] OTP Email sent to ${email} (MessageID: ${info.messageId})`);
+        console.log(`✅ [NODEMAILER SUCCESS] OTP Email delivered to ${email}! MessageID: ${info.messageId}`);
         return info;
     } catch (error) {
-        console.error(`❌ [NODEMAILER ERROR] Failed sending email to ${email}:`, error.message);
+        console.error(`\n❌ [NODEMAILER CRITICAL ERROR] Failed to deliver email to ${email}:`);
+        console.error(`👉 Code: ${error.code || 'N/A'}`);
+        console.error(`👉 Message: ${error.message}`);
         return false;
     }
 };
