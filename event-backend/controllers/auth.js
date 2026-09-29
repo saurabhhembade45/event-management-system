@@ -67,7 +67,7 @@ exports.register = async (req, res) => {
                 createdAt: new Date(),
                 lastSentAt: new Date()
             },
-            { upsert: true, new: true }
+            { upsert: true, returnDocument: 'after' }
         );
 
         // Non-blocking dispatch
