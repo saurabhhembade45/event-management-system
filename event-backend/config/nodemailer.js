@@ -15,20 +15,71 @@ const sendOTPEmail = async (email, otp) => {
     console.log(`\n📧 [EMAIL ATTEMPT] Preparing to send OTP code to: ${email}`);
 
     const htmlContent = `
-    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 500px; margin: 0 auto; padding: 24px; background: #0f172a; border-radius: 16px; border: 1px solid #334155; color: #f8fafc;">
-        <div style="text-align: center; margin-bottom: 24px;">
-            <h1 style="color: #6366f1; margin: 0; font-size: 28px; font-weight: 800;">Eventopia</h1>
-            <p style="color: #94a3b8; font-size: 14px; margin-top: 4px;">Email Verification Code</p>
-        </div>
-        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);">
-            <p style="color: #cbd5e1; font-size: 15px; margin-bottom: 16px;">Use the following 6-digit OTP to complete your email verification:</p>
-            <div style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #38bdf8; padding: 12px 24px; background: rgba(56, 189, 248, 0.1); border-radius: 8px; display: inline-block; margin: 8px 0;">
-                ${otp}
-            </div>
-            <p style="color: #f43f5e; font-size: 13px; margin-top: 16px;">⏱️ This code will expire in <strong>5 minutes</strong>.</p>
-        </div>
-        <p style="color: #64748b; font-size: 12px; text-align: center; margin-top: 24px;">If you did not request this verification code, please ignore this email.</p>
-    </div>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Eventopia Verification Code</title>
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; padding: 40px 16px;">
+            <tr>
+                <td align="center">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 460px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); overflow: hidden;">
+                        <tr>
+                            <td style="height: 4px; background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 32px 28px 28px 28px;">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 24px;">
+                                    <tr>
+                                        <td>
+                                            <div style="font-size: 20px; font-weight: 700; color: #0f172a; letter-spacing: -0.3px;">
+                                                <span style="background: #4f46e5; color: #ffffff; padding: 4px 10px; border-radius: 6px; font-size: 14px; margin-right: 6px;">E</span>
+                                                Eventopia
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <h1 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 600; color: #0f172a; line-height: 1.3;">Verify your email address</h1>
+                                
+                                <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.5; color: #475569;">
+                                    Use the 6-digit verification code below to complete your account setup on Eventopia.
+                                </p>
+
+                                <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 24px;">
+                                    <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #64748b; display: block; margin-bottom: 8px;">VERIFICATION CODE</span>
+                                    <div style="font-family: 'SF Mono', 'Courier New', Courier, monospace; font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #4f46e5; padding-left: 8px;">
+                                        ${otp}
+                                    </div>
+                                </div>
+
+                                <p style="margin: 0 0 24px 0; font-size: 13px; color: #64748b; text-align: center; line-height: 1.4;">
+                                    This code will expire in <strong>5 minutes</strong>. Do not share this code with anyone.
+                                </p>
+
+                                <div style="border-top: 1px solid #f1f5f9; margin-bottom: 20px;"></div>
+
+                                <p style="margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.4;">
+                                    If you didn't request this code, you can safely ignore this email.
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #f8fafc; padding: 16px 28px; border-top: 1px solid #f1f5f9; text-align: center;">
+                                <p style="margin: 0; font-size: 12px; color: #94a3b8;">
+                                    © ${new Date().getFullYear()} Eventopia • Campus Event Management System
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
     `;
 
     // Attempt 1: Resend HTTPS API (Port 443 - Bypasses Render SMTP port blocking)
