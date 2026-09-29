@@ -114,16 +114,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await verifyOtpUser(data);
       if (res.data.success) {
-        if (res.data.token && res.data.user) {
-          localStorage.setItem('token', res.data.token);
-          localStorage.setItem('user', JSON.stringify(res.data.user));
-          setUser(res.data.user);
-          toast.success(res.data.message || 'Account verified! Welcome to Eventopia 🎉');
-          navigate('/dashboard');
-        } else {
-          toast.success(res.data.message || 'Email verified successfully!');
-          navigate('/login');
+        const token = res.data.token;
+        const userData = res.data.user;
+
+        if (token) {
+          localStorage.setItem('token', token);
         }
+        if (userData) {
+          localStorage.setItem('user', JSON.stringify(userData));
+          setUser(userData);
+        }
+
+        toast.success(res.data.message || 'Account verified! Welcome to Eventopia 🎉');
+        navigate('/dashboard', { replace: true });
         return true;
       }
     } catch (error) {

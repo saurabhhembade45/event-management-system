@@ -38,10 +38,15 @@ function Register() {
         college: "",
       });
 
-      // go to login page
+      if (res.data?.token && res.data?.user) {
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+      }
+
+      // go to dashboard directly
       setTimeout(() => {
-        navigate("/");
-      }, 1200);
+        navigate("/dashboard");
+      }, 1000);
 
     } catch (err) {
       toast.error(
